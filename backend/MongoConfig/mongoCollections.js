@@ -16,4 +16,11 @@ const getCollectionFn = (collection) => {
 };
 
 /* Now, you can list your collections here: */
-export const artists = getCollectionFn('artists');
+export const users = getCollectionFn('users');
+export const workouts = getCollectionFn('workouts');
+export const exercises = getCollectionFn('exercises');
+export const workoutTemplates = getCollectionFn('workoutTemplates');
+export const calorieEntries = getCollectionFn('calorieEntries');
+export const bodyWeightEntries = getCollectionFn('bodyWeightEntries');
+export const userGoals = getCollectionFn('userGoals');
+export const personalRecords = getCollectionFn('personalRecords');
