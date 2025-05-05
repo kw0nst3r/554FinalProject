@@ -36,23 +36,24 @@ export const resolvers = {
       }
     },
     Workout: {
-        userId: async (parent) => {
-            const usersCollection = await usersCollectionFn();
-            const user = await usersCollection.findOne({ _id: parent.userId });
-            if (!user) {
-                throw new GraphQLError("User not found for workout.", { extensions: { code: "NOT_FOUND" } });
-            }
-            user._id = user._id.toString();
-            return user;
-        },
-        exercises: async (parent) => {
-            const exercisesCollection = await exercisesCollectionFn();
-            const exercises = await exercisesCollection.find({ workoutId: parent._id ? new ObjectId(parent._id) : null }).toArray();
-            // Convert _id to string
-            return exercises.map(e => ({ ...e, _id: e._id.toString() }));
-        }
-    },
-    Exercise: {
+          userId: async (parent) => {
+              const usersCollection = await usersCollectionFn();
+              const user = await usersCollection.findOne({ _id: parent.userId });
+              if (!user) {
+                  throw new GraphQLError("User not found for workout.", { extensions: { code: "NOT_FOUND" } });
+              }
+              user._id = user._id.toString();
+              return user;
+          },
+          exercises: async (parent) => {
+              const exercisesCollection = await exercisesCollectionFn();
+              const exercises = await exercisesCollection.find({
+                  workoutId: parent._id ? new ObjectId(parent._id) : null
+              }).toArray();
+              return exercises.map(e => ({ ...e, _id: e._id.toString() }));
+          }
+      },
+      Exercise: {
         workout: async (parent) => {
             const workoutsCollection = await workoutsCollectionFn();
             const workout = await workoutsCollection.findOne({ _id: parent.workoutId });

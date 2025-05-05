@@ -164,15 +164,17 @@ export const typeDefs = gql`
 # Mutations
 ####################
 type Mutation {
-  addUser(name: String!, bodyWeight: Float!): User
+addUser(name: String!, bodyWeight: Float!): User
   editUser(_id: String!, name: String, bodyWeight: Float): User
   removeUser(_id: String!): User
 
-  logWorkout(userId: String!, name: String!): Workout
+  addWorkout(userId: String!, name: String!, date: String!): Workout!
+  editWorkout(_id: String!, name: String, date: String): Workout!
+  removeWorkout(_id: String!): Workout!
 
-  addExercise(workoutId: String!, name: String!, sets: [SetInput!]!): Exercise
-  editExercise(_id: String!, name: String, sets: [SetInput!]): Exercise
-  removeExercise(_id: String!): Exercise
+  addExercise(workoutId: String!, name: String!, sets: [SetInput!]!): Exercise!
+  editExercise(_id: String!, name: String, sets: [SetInput!]): Exercise!
+  removeExercise(_id: String!): Exercise!
 
   addSet(exerciseId: String!, weight: Float!, reps: Int!, rir: Int!): Set
   editSet(exerciseId: String!, setIndex: Int!, weight: Float, reps: Int, rir: Int): Set
@@ -214,42 +216,6 @@ type Mutation {
 
   removeBodyWeightEntry(_id: String!): BodyWeightEntry
 
-  addWorkout(
-    userId: ID!
-    name: String!
-    date: String!
-  ): Workout!
-
-  editWorkout(
-    _id: ID!
-    name: String
-    date: String
-  ): Workout!
-
-  removeWorkout(_id: ID!): Workout!
-
-  input SetInput {
-    weight: Float!
-    reps: Int!
-    rir: Int!
-  }
-
-  addExercise(
-    workoutId: ID!
-    name: String!
-    sets: [SetInput!]!
-  ): Exercise!
-
-  editExercise(
-    _id: ID!
-    name: String
-    sets: [SetInput!]
-  ): Exercise!
-
-  removeExercise(_id: ID!): Exercise!
-
-
-
   setUserGoals(
     userId: String!,
     dailyCalorieTarget: Int,
@@ -260,10 +226,62 @@ type Mutation {
     goalType: String
   ): UserGoals
 
-  addFriend(userId: String!, friendId: String!): User
-  removeFriend(userId: String!, friendId: String!): User
+  addWorkoutTemplate(
+    userId: String!,
+    name: String!,
+    exercises: [ExerciseInput!]!
+  ): WorkoutTemplate
 
-  createWorkoutTemplate(userId: String!, name: String!, exercises: [ExerciseInput!]!): WorkoutTemplate
-  scheduleWorkout(userId: String!, date: String!, templateId: String!): Workout
+  editWorkoutTemplate(
+    _id: String!,
+    name: String,
+    exercises: [ExerciseInput!]
+  ): WorkoutTemplate
+
+  removeWorkoutTemplate(_id: String!): WorkoutTemplate
+
+  addTemplateExercise(
+    templateId: String!,
+    exercise: ExerciseInput!
+  ): WorkoutTemplate
+
+  editTemplateExercise(
+    templateId: String!,
+    exerciseIndex: Int!,
+    name: String,
+    sets: [SetInput!]
+  ): WorkoutTemplate
+
+  removeTemplateExercise(
+    templateId: String!,
+    exerciseIndex: Int!
+  ): TemplateExercise
+
+  addTemplateSet(
+    templateId: String!,
+    exerciseIndex: Int!,
+    set: SetInput!
+  ): WorkoutTemplate
+
+  editTemplateSet(
+    templateId: String!,
+    exerciseIndex: Int!,
+    setIndex: Int!,
+    weight: Float,
+    reps: Int,
+    rir: Int
+  ): Set
+
+  removeTemplateSet(
+    templateId: String!,
+    exerciseIndex: Int!,
+    setIndex: Int!
+  ): Set
+
+  scheduleWorkout(
+    userId: String!,
+    date: String!,
+    templateId: String!
+  ): Workout
 }
 `;
