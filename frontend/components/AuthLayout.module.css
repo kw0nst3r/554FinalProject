@@ -86,6 +86,13 @@
     box-sizing: border-box;
     background-color: #CDD5D1;
 }
+.formInputs input[type="number"]::-webkit-inner-spin-button,
+.formInputs input[type="number"]::-webkit-outer-spin-button {
+    opacity: 0.6;       
+    margin: 0 5px;      
+    transform: scale(1.2);
+}
+
 /* Buttons that toggle between sign-in and sign-up */
 .buttonRow {
     display: flex;
@@ -120,4 +127,34 @@
 }
 .buttonRow .primaryButton:hover {
     background-color: #A96240;
+}
+
+.googleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: fit-content;
+    min-width: 220px;
+    max-width: 100%;
+    padding: 0.75rem 1.25rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #E5E7E6;
+    color: #555;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s ease, filter 0.3s ease;
+    margin-top: 1.5rem;
+}
+.googleButton:hover {
+    background-color: #D1D3D2;
+    filter: brightness(0.95);
+}
+.googleButton img {
+    display: block;
 }
