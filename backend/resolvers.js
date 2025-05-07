@@ -13,6 +13,73 @@ import { ObjectId } from "mongodb"
 import getRedisClient from "./redisClient.js"
 
 export const resolvers = {
+  Query: {
+    users: async () => {
+      const usersCollection = await usersCollectionFn();
+      const users = await usersCollection.find({}).toArray();
+      return users.map(u => ({ ...u, _id: u._id.toString() }));
+    },
+  
+    getUserById: async (_, { _id }) => {
+      const usersCollection = await usersCollectionFn();
+      const user = await usersCollection.findOne({ _id: new ObjectId(_id) });
+      if (!user) throw new GraphQLError("User not found", { extensions: { code: "NOT_FOUND" } });
+      user._id = user._id.toString();
+      return user;
+    },
+  
+    workouts: async (_, { userId }) => {
+      const workoutsCollection = await workoutsCollectionFn();
+      const workouts = await workoutsCollection.find({ userId: new ObjectId(userId) }).toArray();
+      return workouts.map(w => ({ ...w, _id: w._id.toString() }));
+    },
+  
+    getWorkoutById: async (_, { _id }) => {
+      const workoutsCollection = await workoutsCollectionFn();
+      const workout = await workoutsCollection.findOne({ _id: new ObjectId(_id) });
+      if (!workout) throw new GraphQLError("Workout not found", { extensions: { code: "NOT_FOUND" } });
+      workout._id = workout._id.toString();
+      return workout;
+    },
+  
+    exercises: async (_, { workoutId }) => {
+      const exercisesCollection = await exercisesCollectionFn();
+      const exercises = await exercisesCollection.find({ workoutId: new ObjectId(workoutId) }).toArray();
+      return exercises.map(e => ({ ...e, _id: e._id.toString() }));
+    },
+  
+    calorieEntries: async (_, { userId }) => {
+      const calorieCollection = await calorieEntriesCollectionFn();
+      const entries = await calorieCollection.find({ userId: new ObjectId(userId) }).toArray();
+      return entries.map(e => ({ ...e, _id: e._id.toString() }));
+    },
+  
+    bodyWeightEntries: async (_, { userId }) => {
+      const bodyWeightCollection = await bodyWeightEntriesCollectionFn();
+      const entries = await bodyWeightCollection.find({ userId: new ObjectId(userId) }).toArray();
+      return entries.map(e => ({ ...e, _id: e._id.toString() }));
+    },
+  
+    getUserGoals: async (_, { userId }) => {
+      const userGoalsCollection = await userGoalsCollectionFn();
+      const goals = await userGoalsCollection.findOne({ userId: new ObjectId(userId) });
+      if (!goals) return null;
+      return goals;
+    },
+  
+    getWorkoutTemplates: async () => {
+      const workoutTemplatesCollection = await workoutTemplatesCollectionFn();
+      const templates = await workoutTemplatesCollection.find({}).toArray();
+      return templates.map(t => ({ ...t, _id: t._id.toString() }));
+    },
+  
+    getScheduledWorkouts: async (_, { userId, date }) => {
+      const workoutsCollection = await workoutsCollectionFn();
+      const workouts = await workoutsCollection.find({ userId: new ObjectId(userId), date }).toArray();
+      return workouts.map(w => ({ ...w, _id: w._id.toString() }));
+    }
+  },
+  
   CalorieEntry: {
         userId: async (parent) => {
             const usersCollection = await usersCollectionFn();
@@ -1071,6 +1138,92 @@ export const resolvers = {
           const updatedTemplate = await workoutTemplatesCollection.findOne({ _id: templateObjId });
           await cache.json.del(`workoutTemplates`);
           return removedSet;
+      },
+      setUserGoals: async (_, { userId, dailyCalorieTarget, proteinTarget, carbTarget, fatTarget, weightGoal, goalType }) => {
+          const cache = await getRedisClient();
+          const userGoalsCollection = await userGoalsCollectionFn();
+    
+          if (!(typeof userId === 'string') || !userId.trim()) {
+              throw new GraphQLError("userId must be a non-empty string.", { extensions: { code: "BAD_USER_INPUT" } });
+          }
+    
+          const userObjId = new ObjectId(userId);
+          const updateFields = {};
+    
+          if (dailyCalorieTarget !== undefined) updateFields.dailyCalorieTarget = dailyCalorieTarget;
+          if (proteinTarget !== undefined) updateFields.proteinTarget = proteinTarget;
+          if (carbTarget !== undefined) updateFields.carbTarget = carbTarget;
+          if (fatTarget !== undefined) updateFields.fatTarget = fatTarget;
+          if (weightGoal !== undefined) updateFields.weightGoal = weightGoal;
+          if (goalType !== undefined) updateFields.goalType = goalType;
+    
+          if (Object.keys(updateFields).length === 0) {
+            throw new GraphQLError("At least one goal field must be provided.", { extensions: { code: "BAD_USER_INPUT" } });
+          }
+    
+          await userGoalsCollection.updateOne(
+              { userId: userObjId },
+              { $set: updateFields },
+              { upsert: true }
+          );
+    
+          const updatedGoals = await userGoalsCollection.findOne({ userId: userObjId });
+    
+          await cache.json.set(`goals/${userId}`, "$", updatedGoals);
+          return updatedGoals;
+      },
+      scheduleWorkout: async (_, { userId, date, templateId }) => {
+          const cache = await getRedisClient();
+          const workoutsCollection = await workoutsCollectionFn();
+          const exercisesCollection = await exercisesCollectionFn();
+          const workoutTemplatesCollection = await workoutTemplatesCollectionFn();
+          
+          //error handling
+          if (!(typeof userId === 'string') || !userId.trim()) {
+              throw new GraphQLError("userId must be a non-empty string.", { extensions: { code: "BAD_USER_INPUT" } });
+          }
+          if (!date || isNaN(new Date(date))) {
+              throw new GraphQLError("Invalid date format.", { extensions: { code: "BAD_USER_INPUT" } });
+          }
+          if (!(typeof templateId === 'string') || !templateId.trim()) {
+              throw new GraphQLError("templateId must be a non-empty string.", { extensions: { code: "BAD_USER_INPUT" } });
+          }
+    
+          const templateObjId = new ObjectId(templateId);
+          const template = await workoutTemplatesCollection.findOne({ _id: templateObjId });
+    
+          //error handling
+          if (!template) {
+              throw new GraphQLError("Workout template not found.", { extensions: { code: "NOT_FOUND" } });
+          }
+    
+          //newowkrout consists of the name, user id(aka in object form) , date, and the following exercises: []
+         const newWorkout = {
+              name: template.name,
+              userId: new ObjectId(userId),
+              date,
+              exercises: []
+          };
+    
+          const insertWorkout = await workoutsCollection.insertOne(newWorkout);
+          //error handling
+          if (!insertWorkout.acknowledged) {
+              throw new GraphQLError("Failed to schedule workout.", { extensions: { code: "INTERNAL_SERVER_ERROR" } });
+          }
+    
+          const workoutId = insertWorkout.insertedId;
+          newWorkout._id = workoutId.toString();
+    
+         const clonedExercises = template.exercises.map(ex => ({
+              workoutId,
+              name: ex.name,
+              sets: ex.sets
+          }));
+    
+          await exercisesCollection.insertMany(clonedExercises);
+          await cache.json.del(`workouts/user/${userId}`);
+          await cache.json.del(`exercises/workout/${workoutId.toString()}`);
+          return newWorkout;
       }
     }
 }
