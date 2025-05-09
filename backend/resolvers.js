@@ -29,8 +29,18 @@ export const resolvers = {
     },
   
     workouts: async (_, { userId }) => {
+      if (!userId || typeof userId !== "string" || !ObjectId.isValid(userId)) {
+        throw new GraphQLError("Invalid userId provided.");
+      }
+
       const workoutsCollection = await workoutsCollectionFn();
-      const workouts = await workoutsCollection.find({ userId: new ObjectId(userId) }).toArray();
+      
+      const usersCollection = await usersCollectionFn();
+      const user = await usersCollection.findOne({ firebaseUid: userId.trim() });
+      if (!user) {
+        throw new GraphQLError("User not found for provided Firebase UID.", { extensions: { code: "NOT_FOUND" } });
+      }
+      const workouts = await workoutsCollection.find({ userId: user._id }).toArray();
       return workouts.map(w => ({ ...w, _id: w._id.toString() }));
     },
   
@@ -77,9 +87,17 @@ export const resolvers = {
       const workoutsCollection = await workoutsCollectionFn();
       const workouts = await workoutsCollection.find({ userId: new ObjectId(userId), date }).toArray();
       return workouts.map(w => ({ ...w, _id: w._id.toString() }));
+    },
+
+    getUserByFirebaseUid: async (_, { firebaseUid }) => {
+      const usersCollection = await usersCollectionFn();
+      const user = await usersCollection.findOne({ firebaseUid: firebaseUid.trim() });
+      if (!user) throw new GraphQLError("User not found for provided Firebase UID.", { extensions: { code: "NOT_FOUND" } });
+      user._id = user._id.toString();
+      return user;
     }
   },
-  
+
   CalorieEntry: {
         userId: async (parent) => {
             const usersCollection = await usersCollectionFn();
@@ -145,7 +163,7 @@ export const resolvers = {
         }
     },
     Mutation: {
-        addUser: async (_, {name, bodyWeight}) => {
+        addUser: async (_, {name, bodyWeight, firebaseUid}) => {
             const cache = await getRedisClient();
             // Validate Inputs
             // Name Validation - It should be a string
@@ -161,8 +179,14 @@ export const resolvers = {
             }
             // now, we add to MongoDB
             const usersCollection = await usersCollectionFn();
-            // next, create user object
-            let newUser = {name: name, bodyWeight: bodyWeight};
+            // next, create user object - FIXED 5/8/2025 
+
+            let newUser = {
+              name: name.trim(), 
+              bodyWeight,
+              firebaseUid: firebaseUid.trim()
+            };
+
             let insert = await usersCollection.insertOne(newUser);
             if (!insert.acknowledged || !insert.insertedId) {
                 throw new GraphQLError(`Could not Add User`, { extensions: { code: "INTERNAL_SERVER_ERROR" }});

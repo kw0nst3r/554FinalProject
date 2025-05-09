@@ -164,7 +164,7 @@ export const typeDefs = gql`
 # Mutations
 ####################
 type Mutation {
-addUser(name: String!, bodyWeight: Float!): User
+addUser(name: String!, bodyWeight: Float!, firebaseUid: String!): User
   editUser(_id: String!, name: String, bodyWeight: Float): User
   removeUser(_id: String!): User
 

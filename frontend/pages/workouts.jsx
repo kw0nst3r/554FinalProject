@@ -3,6 +3,14 @@ import { useRouter } from 'next/router';
 import { auth } from '../firebase/FirebaseConfig';
 import { gql, useQuery } from '@apollo/client';
 
+const GET_USER_BY_FIREBASE_UID = gql`
+  query GetUserByFirebaseUid($firebaseUid: String!) {
+    getUserByFirebaseUid(firebaseUid: $firebaseUid) {
+      _id
+    }
+  }
+`;
+
 const GET_WORKOUTS = gql`
   query GetWorkouts($userId: String!) {
     workouts(userId: $userId) {
@@ -15,12 +23,13 @@ const GET_WORKOUTS = gql`
 
 export default function WorkoutsPage() {
   const router = useRouter();
-  const [userId, setUserId] = useState(null);
+  const [firebaseUid, setFirebaseUid] = useState(null);
+  const [mongoUserId, setMongoUserId] = useState(null);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
-        setUserId(user.uid);
+        setFirebaseUid(user.uid); // grab Firebase UID
       } else {
         router.push('/login');
       }
@@ -28,26 +37,33 @@ export default function WorkoutsPage() {
     return () => unsubscribe();
   }, [router]);
 
-  const { data, loading, error } = useQuery(GET_WORKOUTS, {
-    variables: { userId },
-    skip: !userId
+  const { data: userData, loading: loadingUser } = useQuery(GET_USER_BY_FIREBASE_UID, {
+    variables: { firebaseUid },
+    skip: !firebaseUid,
+    onCompleted: data => {
+      setMongoUserId(data.getUserByFirebaseUid._id); // now set MongoDB _id
+    }
   });
 
-  if (loading || !userId) return <p>Loading...</p>;
+  const { data: workoutData, loading: loadingWorkouts, error } = useQuery(GET_WORKOUTS, {
+    variables: { userId: mongoUserId },
+    skip: !mongoUserId
+  });
+
+  if (loadingUser || loadingWorkouts || !firebaseUid || !mongoUserId) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div style={{ padding: '2rem' }}>
       <h1>Your Workouts</h1>
-      {data.workouts.length === 0 ? (
+      {workoutData.workouts.length === 0 ? (
         <p>No workouts yet. Start by creating one!</p>
       ) : (
         <ul>
-          {data.workouts.map(workout => (
+          {workoutData.workouts.map(workout => (
             <li key={workout._id} style={{ marginBottom: '1rem' }}>
               <strong>{workout.name}</strong><br />
               Date: {new Date(workout.date).toLocaleDateString()}
-              {/* Later: Add view/edit/delete buttons */}
             </li>
           ))}
         </ul>
