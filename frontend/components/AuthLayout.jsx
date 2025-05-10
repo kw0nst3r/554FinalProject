@@ -8,9 +8,11 @@ export default function AuthLayout({children}) {
     <div className={styles.authContainer}>
         {/* Left side: welcome message and image */}
         <div className={styles.authLeft}>
-            <h1>Welcome to our Fitness App!</h1>
+            <h1>Welcome to Peace & Muscle!</h1>
+            <h2>Workout & Macro Calculator</h2>
+            <h2>Be at Peace with Tracking Your Progress!</h2>
+            <h2>Achieve Your Goals with Balance & Precision!</h2>
             <Image src={weightImg} alt="Weight" width={200} height={200} />
-            <p>Sign in or create a free account.</p>
         </div>
         {/* Right side: form content passed in as children */}
         <div className={styles.authRight}>

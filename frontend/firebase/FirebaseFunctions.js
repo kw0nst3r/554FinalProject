@@ -1,4 +1,4 @@
-import app from './FirebaseConfig';
+import {app} from './FirebaseConfig';
 import {
     getAuth,
     createUserWithEmailAndPassword,

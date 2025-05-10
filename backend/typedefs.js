@@ -138,7 +138,7 @@ export const typeDefs = gql`
    type Query {
      users: [User]
      getUserById(_id: String!): User
- 
+     getUserByFirebaseUid(firebaseUid: String!): User
      workouts(userId: String!): [Workout]
      getWorkoutById(_id: String!): Workout
      exercises(workoutId: String!): [Exercise]

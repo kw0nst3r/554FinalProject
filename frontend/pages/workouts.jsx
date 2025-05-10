@@ -10,7 +10,6 @@ const GET_USER_BY_FIREBASE_UID = gql`
     }
   }
 `;
-
 const GET_WORKOUTS = gql`
   query GetWorkouts($userId: String!) {
     workouts(userId: $userId) {
@@ -20,30 +19,31 @@ const GET_WORKOUTS = gql`
     }
   }
 `;
-
 export default function WorkoutsPage() {
   const router = useRouter();
   const [firebaseUid, setFirebaseUid] = useState(null);
   const [mongoUserId, setMongoUserId] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) {
-        setFirebaseUid(user.uid); // grab Firebase UID
-      } else {
-        router.push('/login');
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
-
-  const { data: userData, loading: loadingUser } = useQuery(GET_USER_BY_FIREBASE_UID, {
-    variables: { firebaseUid },
-    skip: !firebaseUid,
-    onCompleted: data => {
-      setMongoUserId(data.getUserByFirebaseUid._id); // now set MongoDB _id
+  const unsubscribe = auth.onAuthStateChanged(user => {
+    if (user) {
+      console.log('Firebase UID:', user.uid);
+      setFirebaseUid(user.uid.toString());
+    } else {
+      router.push('/login');
     }
   });
+  return () => unsubscribe();
+  }, [router]);
+
+  const { data: userData, loading: loadingUser, error: userError } = useQuery(GET_USER_BY_FIREBASE_UID, { variables: { "firebaseUid": firebaseUid},
+  skip: !firebaseUid, onCompleted: data => {
+    setMongoUserId(data.getUserByFirebaseUid._id);
+  },
+  onError: (error) => {
+    console.error('GraphQL error fetching MongoDB user:', error.message);
+  }
+});
 
   const { data: workoutData, loading: loadingWorkouts, error } = useQuery(GET_WORKOUTS, {
     variables: { userId: mongoUserId },
