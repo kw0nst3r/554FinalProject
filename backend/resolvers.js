@@ -36,7 +36,7 @@ export const resolvers = {
       const workoutsCollection = await workoutsCollectionFn();
       
       const usersCollection = await usersCollectionFn();
-      const user = await usersCollection.findOne({ userId: userId.trim() });
+      const user = await usersCollection.findOne({ firebaseUid: userId.trim() });
       if (!user) {
         throw new GraphQLError("User not found for provided Firebase UID.", { extensions: { code: "NOT_FOUND" } });
       }

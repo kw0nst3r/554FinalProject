@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import { auth } from '../firebase/FirebaseConfig';
 import { gql, ApolloProvider } from '@apollo/client';
 import client from '../apollo/client';
@@ -25,7 +25,12 @@ function GlobalUserSync({ children }) {
   const [bodyWeight, setBodyWeight] = useState('');
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        Router.push("/login"); //FORCES LOGIN EVERYTIME THE APP RUNS
+        return;
+      }
       if (user) {
+        console.log("[DEBUG] Firebase UID:", user.uid);
         try {
           const { data } = await client.query({ query: GET_USER_BY_FIREBASE_UID, variables: { firebaseUid: user.uid }, fetchPolicy: 'network-only'});
           if (!data?.getUserByFirebaseUid?._id) {

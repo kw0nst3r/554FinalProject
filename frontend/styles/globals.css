@@ -1,10 +1,19 @@
-* {
-  box-sizing: border-box;
+html, body {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  background-color: #121212;
+  color: white;
+  font-family: sans-serif;
+  min-height: 100%;
+  width: 100%;
 }
 
-body {
-  font-family: 'Open Sans';
-  line-height: 1.6;
+*, *::before, *::after {
+  box-sizing: inherit;
 }
+#__next {
+  min-height: 100vh;
+  width: 100vw;
+}
+
