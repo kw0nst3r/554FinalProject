@@ -161,7 +161,7 @@ const exercisePool = [
 { name: 'Chest to Bar', muscles: ['back', 'lats', 'biceps'] },
 { name: 'Chin-Up', muscles: ['back', 'lats', 'biceps'] },
 { name: 'Clean', muscles: ['back', 'traps', 'glutes', 'hamstrings'] },
-{ name: 'Clean and Jerk', muscles: ['back', 'traps', 'legs', 'shoulders'] },
+{ name: 'Clean and Jerk', muscles: ['back', 'traps', 'quads', 'hamstrings', 'shoulders'] },
 { name: 'Close-Grip Lat Pulldown', muscles: ['back', 'lats', 'biceps'] },
 { name: 'Deadlift', muscles: ['back', 'glutes', 'hamstrings'] },
 { name: 'Deficit Deadlift', muscles: ['back', 'glutes', 'hamstrings'] },
