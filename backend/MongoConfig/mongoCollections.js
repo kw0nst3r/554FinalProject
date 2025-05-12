@@ -24,3 +24,4 @@ export const calorieEntries = getCollectionFn('calorieEntries');
 export const bodyWeightEntries = getCollectionFn('bodyWeightEntries');
 export const userGoals = getCollectionFn('userGoals');
 export const personalRecords = getCollectionFn('personalRecords');
+export const workoutRoutines = getCollectionFn('workoutRoutines');
