@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import weightImg from '../public/weight.png';
-import styles from '../components/AuthLayout.module.css';
+import styles from '../styles/AuthLayout.module.css';
 
 // Shared layout for login and signup pages.
 export default function AuthLayout({children}) {

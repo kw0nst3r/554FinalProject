@@ -1,41 +1,25 @@
-/* Container that holds the left and right halves of the auth layout */
+/* Layout Containers */
 .authContainer {
     display: flex;
     height: 100vh;
     width: 100vw;
     background-color: #444554;
 }
-/* Left section: welcome message, image, and info */
-.authLeft {
-    flex: 1;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: #D7D9D7;
-}
-.authLeft h1 {
-    margin-top: 5rem;
-    margin-bottom: auto;
-}
-.authLeft img {
-    width: 250px;
-    height: auto;
-    margin: 2rem 0;
-}
-.authLeft p {
-    margin-top: auto;
-    margin-bottom: 5rem;
-}
-/* Right section: holds the log-in and sign-up containers */
+.authLeft,
 .authRight {
     flex: 1;
+    padding: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+}
+.authLeft {
+    text-align: center;
+    flex-direction: column;
+    color: #D7D9D7;
+}
+.authRight {
+    justify-content: center;
 }
 .authCard {
     display: flex;
@@ -49,6 +33,20 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
 }
+/* Auth Content */
+.authLeft h1 {
+    margin-top: 5rem;
+    margin-bottom: auto;
+}
+.authLeft img {
+    width: 250px;
+    height: auto;
+    margin: 2rem 0;
+}
+.authLeft p {
+    margin-top: auto;
+    margin-bottom: 5rem;
+}
 .loginContainer,
 .signupContainer {
     display: flex;
@@ -58,17 +56,16 @@
     height: 100%;
     overflow-y: auto;
 }
-/* Form Body: holds all inputs on sign-in/signup pages */
+/* Form styling */
 .formBody {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    justify-content: flex-start;
     align-items: center;
     width: 100%;
 }
 .formBody h2 {
     margin-bottom: 1.5em;
+    color:#2c2d2e;
 }
 .formInputs {
     display: flex;
@@ -92,8 +89,15 @@
     margin: 0 5px;      
     transform: scale(1.2);
 }
-
-/* Buttons that toggle between sign-in and sign-up */
+/* Error message */
+.error {
+  color: #C16E70;
+  text-align: center;
+  font-size: 0.8rem;
+  margin: 2px 0 8px 0;
+  padding: 0;
+}
+/* Button styling */
 .buttonRow {
     display: flex;
     justify-content: center;
@@ -115,29 +119,23 @@
 }
 .buttonRow button:last-of-type {
     background-color: #a2a2a2;
-    color: white;
 }
 .buttonRow button:last-of-type:hover {
     background-color: #8a8a8a;
 }
 .buttonRow .primaryButton {
     background-color: #C57B57;
-    color: white;
-    transition: background-color 0.3s ease;
 }
 .buttonRow .primaryButton:hover {
     background-color: #A96240;
 }
-
+/* Google Button */
 .googleButton {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    width: fit-content;
     min-width: 220px;
-    max-width: 100%;
-    padding: 0.75rem 1.25rem;
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 4px;

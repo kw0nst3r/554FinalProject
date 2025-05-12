@@ -193,7 +193,7 @@ export const resolvers = {
             }
             // make sure id is a string when adding to redis
             newUser._id = insert.insertedId.toString();
-            await cache.json.set(`users/${newUser._id}`, "$", newUser);
+            await cache.json.set(`users/${newUser._id}`, '$', newUser);
             await cache.json.del(`users`);
             return newUser;
         },

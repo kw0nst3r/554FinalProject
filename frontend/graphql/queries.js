@@ -27,3 +27,20 @@ export const GET_USER_PROFILE = gql`
     }
   }
 `;
+
+
+export const GET_USER_BY_FIREBASE_UID = gql`
+  query GetUserByFirebaseUid($firebaseUid: String!) {
+    getUserByFirebaseUid(firebaseUid: $firebaseUid) {
+      _id
+    }
+  }
+`;
+export const ADD_USER = gql`
+  mutation AddUser($name: String!, $bodyWeight: Float!, $firebaseUid: String!) {
+    addUser(name: $name, bodyWeight: $bodyWeight, firebaseUid: $firebaseUid) {
+      _id
+    }
+  }
+`;
+

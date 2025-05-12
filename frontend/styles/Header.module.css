@@ -1,0 +1,29 @@
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    padding: 1rem 2rem;
+    background-color: #1e1e1e;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.welcome {
+    font-size: 1rem;
+    font-weight: 500;
+}
+.signOutButton {
+    background-color: #c16e70;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.signOutButton:hover {
+    background-color: #a55356;
+}
