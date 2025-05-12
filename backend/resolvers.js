@@ -6,7 +6,8 @@ import {users as usersCollectionFn,
         calorieEntries as calorieEntriesCollectionFn,
         bodyWeightEntries as bodyWeightEntriesCollectionFn,
         userGoals as userGoalsCollectionFn,
-        personalRecords as personalRecordsCollectionFn} 
+        personalRecords as personalRecordsCollectionFn,
+        workoutRoutines as workoutRoutinesCollectionFn} 
 from "./MongoConfig/mongoCollections.js";
 import {v4 as uuid} from "uuid";
 import { ObjectId } from "mongodb"
@@ -749,6 +750,23 @@ export const resolvers = {
               await cache.json.del(`workouts/user/${userId}`);
               return newWorkout;
           },
+          addWorkoutRoutine: async (_, { userId, days }) => {
+            const routinesCollection = await workoutRoutinesCollectionFn();
+          
+            const newRoutine = {
+              userId,
+              days
+            };
+          
+            const result = await routinesCollection.insertOne(newRoutine);
+          
+            return {
+              _id: result.insertedId.toString(),
+              userId,
+              days
+            };
+          },
+
         editWorkout: async (_, { _id, name, date }) => {
             const cache = await getRedisClient();
             const workoutsCollection = await workoutsCollectionFn();
