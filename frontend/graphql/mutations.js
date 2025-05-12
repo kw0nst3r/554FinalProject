@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const ADD_CALORIE_ENTRY = gql`
+export const CREATE_CALORIE_ENTRY = gql`
   mutation AddCalorieEntry(
     $userId: String!
     $food: String!
@@ -29,16 +29,15 @@ export const ADD_CALORIE_ENTRY = gql`
     }
   }
 `;
-
 export const EDIT_CALORIE_ENTRY = gql`
   mutation EditCalorieEntry(
     $_id: String!
-    $food: String
-    $calories: Int
-    $protein: Float
-    $carbs: Float
-    $fats: Float
-    $date: String
+    $food: String!
+    $calories: Int!
+    $protein: Float!
+    $carbs: Float!
+    $fats: Float!
+    $date: String!
   ) {
     editCalorieEntry(
       _id: $_id
@@ -59,11 +58,48 @@ export const EDIT_CALORIE_ENTRY = gql`
     }
   }
 `;
-
 export const REMOVE_CALORIE_ENTRY = gql`
-  mutation RemoveCalorieEntry($_id: String!) {
-    removeCalorieEntry(_id: $_id) {
+  mutation RemoveCalorieEntry(
+    $_id: String!
+  ) {
+    removeCalorieEntry(
+      _id: $_id
+    ) {
       _id
+      food
+      calories
+      protein
+      carbs
+      fats
+      date
+    }
+  }
+`;
+
+export const ADD_WORKOUT_ROUTINE = gql`
+  mutation AddWorkoutRoutine($userId: String!, $days: [WorkoutDayInput!]!) {
+    addWorkoutRoutine(userId: $userId, days: $days) {
+      _id
+      userId
+      days {
+        name
+        exercises {
+          name
+          sets
+          muscles
+        }
+      }
+    }
+  }
+`;
+
+
+export const UPDATE_USER_PROFILE = gql`
+  mutation UpdateUserProfile($userId: String!, $firstName: String!, $lastName: String!, $weight: Float!) {
+    updateUserProfile(userId: $userId, firstName: $firstName, lastName: $lastName, weight: $weight) {
+      firstName
+      lastName
+      weight
     }
   }
 `;

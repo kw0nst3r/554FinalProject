@@ -164,7 +164,9 @@ export const typeDefs = gql`
 # Mutations
 ####################
 type Mutation {
-addUser(name: String!, bodyWeight: Float!, firebaseUid: String!): User
+  updateUserProfile(userId: String!, firstName: String!, lastName: String!, weight: Float!): User
+
+  addUser(name: String!, bodyWeight: Float!, firebaseUid: String!): User
   editUser(_id: String!, name: String, bodyWeight: Float): User
   removeUser(_id: String!): User
 
@@ -283,5 +285,41 @@ addUser(name: String!, bodyWeight: Float!, firebaseUid: String!): User
     date: String!,
     templateId: String!
   ): Workout
+    addWorkoutRoutine(
+    userId: String!,
+    days: [WorkoutDayInput!]!
+  ): WorkoutRoutine
+}
+
+####################
+# New Routine Types
+####################
+
+input WorkoutDayInput {
+  name: String!
+  exercises: [RoutineExerciseInput!]!
+}
+
+input RoutineExerciseInput {
+  name: String!
+  sets: Int!
+  muscles: [String!]!
+}
+
+type WorkoutRoutine {
+  _id: ID!
+  userId: String!
+  days: [WorkoutDay!]!
+}
+
+type WorkoutDay {
+  name: String!
+  exercises: [RoutineExercise!]!
+}
+
+type RoutineExercise {
+  name: String!
+  sets: Int!
+  muscles: [String!]!
 }
 `;

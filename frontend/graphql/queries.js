@@ -19,11 +19,11 @@ export const GET_CALORIE_ENTRIES = gql`
 //Thomas Kwon- Do not change (yet)
 //Retrieves first name, last name, and weight based on Firebase UID
 export const GET_USER_PROFILE = gql`
-  query GetUserProfile($userId: String!) {
-    userProfile(userId: $userId) {
-      firstName
-      lastName
-      weight
+  query GetUserProfile($firebaseUid: String!) {
+    getUserByFirebaseUid(firebaseUid: $firebaseUid) {
+      _id
+      name
+      bodyWeight
     }
   }
 `;
