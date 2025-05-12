@@ -212,7 +212,11 @@ const CreateRoutine = ({ onSubmit }) => {
       )}
 
       {routine && (
-        <CreateWorkoutBuilder adjustedSets={routine.adjustedSets} />
+        <CreateWorkoutBuilder 
+        adjustedSets={routine.adjustedSets} 
+        frequency={routine.frequency}
+      />
+      
       )}
     </div>
   );
