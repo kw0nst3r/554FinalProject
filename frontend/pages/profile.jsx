@@ -23,18 +23,21 @@ export default function ProfilePage() {
   }, [router]);
 
   const { data, loading, error, refetch } = useQuery(GET_USER_PROFILE, {
-    variables: { userId },
+    variables: { firebaseUid: userId },
     skip: !userId
   });
 
   const [updateProfile] = useMutation(UPDATE_USER_PROFILE);
 
   useEffect(() => {
-    if (data?.userProfile) {
-      const { firstName, lastName, weight } = data.userProfile;
-      setForm({ firstName, lastName, weight: weight.toString() });
+    if (data?.getUserByFirebaseUid) {
+      const { name, bodyWeight } = data.getUserByFirebaseUid;
+      const [firstName, ...rest] = name.trim().split(" ");
+      const lastName = rest.join(" ");
+      setForm({ firstName, lastName, weight: bodyWeight.toString() });
     }
   }, [data]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

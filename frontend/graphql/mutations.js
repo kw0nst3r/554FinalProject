@@ -92,3 +92,14 @@ export const ADD_WORKOUT_ROUTINE = gql`
     }
   }
 `;
+
+
+export const UPDATE_USER_PROFILE = gql`
+  mutation UpdateUserProfile($userId: String!, $firstName: String!, $lastName: String!, $weight: Float!) {
+    updateUserProfile(userId: $userId, firstName: $firstName, lastName: $lastName, weight: $weight) {
+      firstName
+      lastName
+      weight
+    }
+  }
+`;
