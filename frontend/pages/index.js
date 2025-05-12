@@ -29,6 +29,7 @@ export default function Index() {
       <p className={styles.subtitle}>Select an option:</p>
       <div className={styles.linkList}>
         <a href="/workouts">View Workouts</a>
+        <a href="/createroutine">Create Workout Routine</a>
         <a href="/calories">Track Calories</a>
         <a href="/weights">Track Weight</a>
         <a href="/profile">View/Edit Profile</a>
