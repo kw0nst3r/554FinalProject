@@ -255,3 +255,5 @@ const exercisePool = [
 { name: 'Seated Calf Raise', muscles: ['calves'] },
 { name: 'Standing Calf Raise', muscles: ['calves'] }
 ];
+
+export default exercisePool;
