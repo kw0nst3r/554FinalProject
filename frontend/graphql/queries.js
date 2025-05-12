@@ -28,7 +28,6 @@ export const GET_USER_PROFILE = gql`
   }
 `;
 
-
 export const GET_USER_BY_FIREBASE_UID = gql`
   query GetUserByFirebaseUid($firebaseUid: String!) {
     getUserByFirebaseUid(firebaseUid: $firebaseUid) {
