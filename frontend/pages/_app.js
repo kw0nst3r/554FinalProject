@@ -25,10 +25,6 @@ function GlobalUserSync({ children }) {
   const [bodyWeight, setBodyWeight] = useState('');
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        Router.push("/login"); //FORCES LOGIN EVERYTIME THE APP RUNS
-        return;
-      }
       if (user) {
         console.log("[DEBUG] Firebase UID:", user.uid);
         try {
