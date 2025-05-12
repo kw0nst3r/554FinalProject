@@ -283,5 +283,41 @@ addUser(name: String!, bodyWeight: Float!, firebaseUid: String!): User
     date: String!,
     templateId: String!
   ): Workout
+    addWorkoutRoutine(
+    userId: String!,
+    days: [WorkoutDayInput!]!
+  ): WorkoutRoutine
+}
+
+####################
+# New Routine Types
+####################
+
+input WorkoutDayInput {
+  name: String!
+  exercises: [RoutineExerciseInput!]!
+}
+
+input RoutineExerciseInput {
+  name: String!
+  sets: Int!
+  muscles: [String!]!
+}
+
+type WorkoutRoutine {
+  _id: ID!
+  userId: String!
+  days: [WorkoutDay!]!
+}
+
+type WorkoutDay {
+  name: String!
+  exercises: [RoutineExercise!]!
+}
+
+type RoutineExercise {
+  name: String!
+  sets: Int!
+  muscles: [String!]!
 }
 `;
