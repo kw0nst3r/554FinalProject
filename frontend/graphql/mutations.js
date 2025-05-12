@@ -67,3 +67,20 @@ export const REMOVE_CALORIE_ENTRY = gql`
     }
   }
 `;
+
+export const ADD_WORKOUT_ROUTINE = gql`
+  mutation AddWorkoutRoutine($userId: String!, $days: [WorkoutDayInput!]!) {
+    addWorkoutRoutine(userId: $userId, days: $days) {
+      _id
+      userId
+      days {
+        name
+        exercises {
+          name
+          sets
+          muscles
+        }
+      }
+    }
+  }
+`;
