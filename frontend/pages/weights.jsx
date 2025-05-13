@@ -4,6 +4,7 @@ import { auth } from '../firebase/FirebaseConfig';
 import client from '../apollo/client';
 import { GET_USER_BY_FIREBASE_UID, GET_BODY_WEIGHT_ENTRIES} from '../graphql/queries';
 import { ADD_BODY_WEIGHT_ENTRY, EDIT_BODY_WEIGHT_ENTRY, REMOVE_BODY_WEIGHT_ENTRY} from '../graphql/mutations';
+import WeightGraph from './WeightGraph.jsx';
 export default function WeightsPage() {
   const router = useRouter();
   const [firebaseUid, setFirebaseUid] = useState(null);
@@ -57,6 +58,11 @@ export default function WeightsPage() {
     }
     if (new Date(form.date) > new Date()) {
       alert('Date cannot be in the future.');
+      return;
+    }
+    const alreadyExists = entries.some((entry) => entry.date.slice(0, 10) === form.date && (!editId || entry._id !== editId));
+    if (alreadyExists) {
+      alert('A weight entry already exists for this date.');
       return;
     }
     const variables = {userId: mongoUserId, weight: parseFloat(form.weight), date: form.date};
@@ -159,6 +165,7 @@ export default function WeightsPage() {
           ))}
         </ul>
       )}
+      {entries.length > 0 && <WeightGraph entries={entries} />}
     </div>
   );
 }
