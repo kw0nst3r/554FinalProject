@@ -105,10 +105,11 @@ export const REMOVE_BODY_WEIGHT_ENTRY = gql`
 `;
 
 export const ADD_WORKOUT_ROUTINE = gql`
-  mutation AddWorkoutRoutine($userId: String!, $days: [WorkoutDayInput!]!) {
-    addWorkoutRoutine(userId: $userId, days: $days) {
+  mutation AddWorkoutRoutine($userId: String!, $routineName: String!, $days: [WorkoutDayInput!]!) {
+    addWorkoutRoutine(userId: $userId, routineName: $routineName, days: $days) {
       _id
       userId
+      routineName
       days {
         name
         exercises {
@@ -120,6 +121,8 @@ export const ADD_WORKOUT_ROUTINE = gql`
     }
   }
 `;
+
+
 
 // WORKING DO NOT CHANGE BELOW
 export const UPDATE_USER_PROFILE = gql`
