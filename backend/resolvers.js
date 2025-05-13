@@ -234,7 +234,7 @@ export const resolvers = {
             await cache.json.del(`users`);
             return newUser;
         },
-        editUser: async (_, {_id, name, bodyWeight}) => {
+        editUser: async (_, {_id, name, bodyWeight, photoUrl}) => {
             const cache = await getRedisClient();
             // first step is to get the mongodb connection
             const usersCollection = await usersCollectionFn();
@@ -275,6 +275,12 @@ export const resolvers = {
                     throw new GraphQLError(`Bodyweight cannot be less than 0.`, { extensions: {code: 'BAD_USER_INPUT'}});
                 }
                 updatedFields.bodyWeight = bodyWeight;
+            }
+            if (photoUrl !== undefined) {
+              if (typeof photoUrl !== 'string' || !photoUrl.trim()) {
+                throw new GraphQLError(`Photo URL must be a non-empty string.`, { extensions: { code: 'BAD_USER_INPUT' } });
+              }
+              updatedFields.photoUrl = photoUrl.trim();
             }
             // now, check to make sure updatedFields isn't empty
             if(Object.keys(updatedFields).length === 0){

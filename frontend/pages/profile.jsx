@@ -40,12 +40,12 @@ export default function ProfilePage() {
   // Populate form with user data
   useEffect(() => {
     if (data?.getUserByFirebaseUid) {
-      const { _id, name, bodyWeight } = data.getUserByFirebaseUid;
+      const {_id, name, bodyWeight, photoUrl} = data.getUserByFirebaseUid;
       setMongoId(_id);
       const [firstName, ...rest] = name.trim().split(" ");
       const lastName = rest.join(" ");
       const weight = bodyWeight?.toString() || '';
-      setProfile({firstName, lastName, weight});
+      setProfile({firstName, lastName, weight, photoUrl});
       setForm({firstName, lastName, weight});
     }
   }, [data]);
@@ -66,7 +66,6 @@ export default function ProfilePage() {
     const result = await res.json();
     if (res.ok) {
       setProfilePhotoUrl(result.url);
-      setProfile(prev => ({ ...prev, photoUrl: result.url }));
     } else {
       alert('Upload failed: ' + result.error);
     }
@@ -76,10 +75,15 @@ export default function ProfilePage() {
     e.preventDefault();
     try {
       await updateProfile({
-        variables: { id: mongoId, name: `${form.firstName} ${form.lastName}`, bodyWeight: parseFloat(form.weight)}
+        variables: {
+          id: mongoId,
+          name: `${form.firstName} ${form.lastName}`,
+          bodyWeight: parseFloat(form.weight),
+          photoUrl: profilePhotoUrl || profile.photoUrl || ''
+        }
       });
       setStatusMsg({type: 'success', text: 'Profile updated successfully!'});
-      setProfile(prev => ({ ...form, photoUrl: prev.photoUrl }));
+      setProfile(prev => ({ ...form, photoUrl: profilePhotoUrl || prev.photoUrl }));
       setShowForm(false);
       refetch();
     } catch (err) {
