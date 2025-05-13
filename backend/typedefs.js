@@ -287,13 +287,14 @@ type Mutation {
   ): Workout
     addWorkoutRoutine(
     userId: String!,
+    routineName: String!,
     days: [WorkoutDayInput!]!
-  ): WorkoutRoutine
+    ): WorkoutRoutine
 }
-
 ####################
 # New Routine Types
 ####################
+
 
 input WorkoutDayInput {
   name: String!
@@ -309,8 +310,10 @@ input RoutineExerciseInput {
 type WorkoutRoutine {
   _id: ID!
   userId: String!
+  routineName: String!
   days: [WorkoutDay!]!
 }
+
 
 type WorkoutDay {
   name: String!
