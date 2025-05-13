@@ -93,13 +93,13 @@ export const ADD_WORKOUT_ROUTINE = gql`
   }
 `;
 
-
+// WORKING DO NOT CHANGE BELOW
 export const UPDATE_USER_PROFILE = gql`
-  mutation UpdateUserProfile($userId: String!, $firstName: String!, $lastName: String!, $weight: Float!) {
-    updateUserProfile(userId: $userId, firstName: $firstName, lastName: $lastName, weight: $weight) {
-      firstName
-      lastName
-      weight
+  mutation EditUser($id: String!, $name: String, $bodyWeight: Float) {
+    editUser(_id: $id, name: $name, bodyWeight: $bodyWeight) {
+      _id
+      name
+      bodyWeight
     }
   }
 `;
