@@ -6,6 +6,21 @@ import {doSignOut} from '../firebase/FirebaseFunctions';
 import Header from '../components/Header.jsx';
 
 export default function Index() {
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        router.replace('/login');
+      } else {
+        setUser(user);
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+  if (loading) return <div>Loading...</div>;
   return (
     <div>
       <Header />
