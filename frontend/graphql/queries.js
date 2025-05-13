@@ -51,3 +51,12 @@ export const ADD_USER = gql`
     }
   }
 `;
+export const GET_WORKOUTS = gql`
+  query GetWorkouts($userId: String!) {
+    workouts(userId: $userId) {
+      _id
+      name
+      date
+    }
+  }
+`;
