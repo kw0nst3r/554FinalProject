@@ -5,6 +5,7 @@ import { gql } from '@apollo/client';
 import client from '../apollo/client';
 import {GET_CALORIE_ENTRIES, GET_USER_BY_FIREBASE_UID} from "../graphql/queries.js";
 import {CREATE_CALORIE_ENTRY, EDIT_CALORIE_ENTRY, REMOVE_CALORIE_ENTRY} from "../graphql/mutations.js";
+import { fetchNutritionData } from '../utils/fetchNutrition.js';
 export default function CaloriesPage() {
   const router = useRouter();
   const [firebaseUid, setFirebaseUid] = useState(null);
@@ -47,6 +48,19 @@ export default function CaloriesPage() {
     });
     return () => unsubscribe();
   }, [router]);
+  const fillFromNutritionAPI = async () => {
+      if (!form.food.trim()) {
+        alert('Please enter a food name first.');
+        return;
+      }
+      const nutrition = await fetchNutritionData(form.food.trim());
+      if (!nutrition) {
+        alert('Could not fetch nutritional data.');
+        return;
+      }
+      setForm(prev => ({ ...prev, calories: nutrition.calories?.toString() || '', protein: nutrition.protein?.toString() || '', carbs: nutrition.carbohydrates_total_g?.toString() || '',
+        fats: nutrition.fat_total_g?.toString() || ''}));
+  };
   const handleAddEntry = async () => {
     if(!form.food.trim()){
       alert("Food name is required")
@@ -165,7 +179,10 @@ export default function CaloriesPage() {
     <div style={{ minHeight: '100vh', backgroundColor: '#121212', padding: '2rem' }}>
       <div style={{marginBottom: '2rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', color: '#ffffff'}}>
         <h2>Add New Calorie Entry</h2>
-        <input required placeholder="Food" value={form.food} onChange={(e) => setForm({ ...form, food: e.target.value })} />
+        <input required placeholder="Food" value={form.food} onChange={(e) => setForm({ ...form, food: e.target.value.trim() })} />
+        <button onClick={fillFromNutritionAPI} style={{ marginLeft: '0.5rem', padding: '0.3rem 0.8rem', backgroundColor: '#9c27b0', border: 'none', borderRadius: '6px', color: 'white', cursor: 'pointer' }}>
+          Fill Nutrition Info
+        </button>
         <input required type="number" min="0" placeholder="Calories" value={form.calories} onChange={(e) => setForm({ ...form, calories: e.target.value.trim() })} />
         <input required type="number" min="0" placeholder="Protein" value={form.protein} onChange={(e) => setForm({ ...form, protein: e.target.value.trim() })} />
         <input required type="number" min="0" placeholder="Carbs" value={form.carbs} onChange={(e) => setForm({ ...form, carbs: e.target.value.trim() })} />
@@ -177,7 +194,10 @@ export default function CaloriesPage() {
         {editId && (
         <div style={{marginTop: '2rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', color: '#ffffff'}}>
           <h2>Edit Calorie Entry</h2>
-          <input required placeholder="Food" value={form.food} onChange={(e) => setForm({ ...form, food: e.target.value })} />
+          <input required placeholder="Food" value={form.food} onChange={(e) => setForm({ ...form, food: e.target.value.trim() })} />
+          <button onClick={fillFromNutritionAPI} style={{ marginLeft: '0.5rem', padding: '0.3rem 0.8rem', backgroundColor: '#9c27b0', border: 'none', borderRadius: '6px', color: 'white', cursor: 'pointer' }}>
+              Fill Nutrition Info
+          </button>
           <input required type="number" min="0" placeholder="Calories" value={form.calories} onChange={(e) => setForm({ ...form, calories: e.target.value.trim() })} />
           <input required type="number" min="0" placeholder="Protein" value={form.protein} onChange={(e) => setForm({ ...form, protein: e.target.value.trim() })} />
           <input required type="number" min="0" placeholder="Carbs" value={form.carbs} onChange={(e) => setForm({ ...form, carbs: e.target.value.trim() })} />
