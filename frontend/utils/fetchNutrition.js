@@ -1,7 +1,7 @@
 export async function fetchNutritionData(query) {
     try {
         const response = await fetch(`https://api.calorieninjas.com/v1/nutrition?query=${encodeURIComponent(query)}`, {
-            headers: {'X-Api-Key': 'elX/L9X4CiEZ0Aq1v1AODw==c0m4kDhEGyABScmz'}
+            headers: {'X-Api-Key': process.env.NEXT_PUBLIC_CALORIE_NINJAS_API_KEY}
         });
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data = await response.json();

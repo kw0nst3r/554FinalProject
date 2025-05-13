@@ -10,7 +10,7 @@ export default function App(props) {
     <AppCacheProvider {...props}>
       <Head>
         <title>My App</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width"/>
+        <meta charSet="utf-8" data-next-head=""/>
       </Head>
       <ApolloProvider client={client}>
         {Component && <Component {...pageProps} />}
