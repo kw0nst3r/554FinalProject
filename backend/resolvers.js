@@ -786,19 +786,19 @@ export const resolvers = {
               await cache.json.del(`workouts/user/${userId}`);
               return newWorkout;
           },
-          addWorkoutRoutine: async (_, { userId, days }) => {
-            const routinesCollection = await workoutRoutinesCollectionFn();
-          
-            const newRoutine = {
+          addWorkoutRoutine: async (_, { userId, routineName, days }) => {
+            const routine = {
               userId,
+              routineName,
               days
             };
           
-            const result = await routinesCollection.insertOne(newRoutine);
-          
+            const workoutRoutinesCollection = await workoutRoutinesCollectionFn();
+            const result = await workoutRoutinesCollection.insertOne(routine);
             return {
-              _id: result.insertedId.toString(),
+              _id: result.insertedId,
               userId,
+              routineName,
               days
             };
           },
