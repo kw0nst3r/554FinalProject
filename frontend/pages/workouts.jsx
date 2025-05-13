@@ -4,6 +4,8 @@ import { auth } from '../firebase/FirebaseConfig';
 import { gql } from '@apollo/client';
 import client from '../apollo/client';
 import Header from '../components/Header.jsx';
+import styles from '../styles/Workouts.module.css';
+
 
 const GET_WORKOUTS = gql`
   query GetWorkouts($userId: String!) {
@@ -87,46 +89,22 @@ export default function WorkoutsPage() {
   return (
     <div>
       <Header></Header>
-      <div style={{ minHeight: '100vh', backgroundColor: '#121212', padding: '2rem' }}>
-        <h1 style={{ color: '#ffffff', fontSize: '2rem', marginBottom: '1rem' }}>Your Workouts</h1>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Your Workouts</h1>
 
         {workouts.length === 0 ? (
-          <div style={{
-            marginTop: '3rem',
-            padding: '0 1rem',
-            backgroundColor: '#1e1e1e',
-            borderRadius: '12px',
-            color: '#ffffff',
-            textAlign: 'center'
-          }}>
-            <p style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+          <div className={styles.emptyBox}>
+            <p className={styles.emptyMessage}>
               You haven’t added any workouts yet!
             </p>
-            <div
-              onClick={() => router.push('/createroutine')}
-              style={{
-                display: 'inline-block',
-                padding: '0.5rem 1.5rem',
-                backgroundColor: '#333',
-                borderRadius: '8px',
-                color: '#00bcd4',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                transition: 'background 0.3s'
-              }}>
+            <div onClick={() => router.push('/createroutine')} className={styles.addWorkoutBtn}>
               [+ Add Workout]
             </div>
           </div>
         ) : (
-          <ul style={{ color: '#ffffff', listStyle: 'none', paddingLeft: 0 }}>
+          <ul className={styles.workoutList}>
             {workouts.map(workout => (
-              <li key={workout._id} style={{
-                marginBottom: '1.5rem',
-                padding: '1rem',
-                backgroundColor: '#1e1e1e',
-                borderRadius: '10px'
-              }}>
+              <li key={workout._id} className={styles.workoutItem}>
                 <strong>{workout.name}</strong><br />
                 Date: {new Date(workout.date).toLocaleDateString()}
               </li>
