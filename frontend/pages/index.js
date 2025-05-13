@@ -2,7 +2,6 @@ import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
 import {auth} from '../firebase/FirebaseConfig';
 import styles from '../styles/Home.module.css';
-import {doSignOut} from '../firebase/FirebaseFunctions';
 import Header from '../components/Header.jsx';
 
 export default function Index() {

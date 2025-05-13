@@ -5,6 +5,7 @@ import { auth } from '../firebase/FirebaseConfig';
 import { GET_USER_PROFILE } from '../graphql/queries';
 import { UPDATE_USER_PROFILE } from '../graphql/mutations';
 import styles from '../styles/Profile.module.css';
+import Header from '../components/Header.jsx';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -66,41 +67,44 @@ export default function ProfilePage() {
   if (error) return <p className={styles.error}>Error: {error.message}</p>;
 
   return (
-    <div className={styles.container}>
-      <h1>My Profile</h1>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <label>
-          First Name:
-          <input
-            type="text"
-            name="firstName"
-            value={form.firstName}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <label>
-          Last Name:
-          <input
-            type="text"
-            name="lastName"
-            value={form.lastName}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <label>
-          Weight (lbs):
-          <input
-            type="number"
-            name="weight"
-            value={form.weight}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <button type="submit">Update Profile</button>
-      </form>
+    <div>
+      <Header></Header>
+      <div className={styles.container}>
+        <h1>My Profile</h1>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <label>
+            First Name:
+            <input
+              type="text"
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            Last Name:
+            <input
+              type="text"
+              name="lastName"
+              value={form.lastName}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            Weight (lbs):
+            <input
+              type="number"
+              name="weight"
+              value={form.weight}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <button type="submit">Update Profile</button>
+        </form>
+      </div>
     </div>
   );
 }

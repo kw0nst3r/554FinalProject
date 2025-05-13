@@ -27,3 +27,17 @@
 .signOutButton:hover {
     background-color: #a55356;
 }
+.homeButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.homeButton img {
+  margin-top: 2px;
+}
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

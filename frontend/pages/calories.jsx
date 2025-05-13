@@ -5,7 +5,9 @@ import { gql } from '@apollo/client';
 import client from '../apollo/client';
 import {GET_CALORIE_ENTRIES, GET_USER_BY_FIREBASE_UID} from "../graphql/queries.js";
 import {CREATE_CALORIE_ENTRY, EDIT_CALORIE_ENTRY, REMOVE_CALORIE_ENTRY} from "../graphql/mutations.js";
+import Header from '../components/Header.jsx';
 import { fetchNutritionData } from '../utils/fetchNutrition.js';
+
 export default function CaloriesPage() {
   const router = useRouter();
   const [firebaseUid, setFirebaseUid] = useState(null);
@@ -176,70 +178,73 @@ export default function CaloriesPage() {
   if (loading) return <p style={{ color: '#ffffff', padding: '2rem' }}>Loading...</p>;
   if (errorMsg) return <p style={{ color: '#ffffff', padding: '2rem' }}>{errorMsg}</p>;
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#121212', padding: '2rem' }}>
-      <div style={{marginBottom: '2rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', color: '#ffffff'}}>
-        <h2>Add New Calorie Entry</h2>
-        <input required placeholder="Food" value={form.food} onChange={(e) => setForm({ ...form, food: e.target.value.trim() })} />
-        <button onClick={fillFromNutritionAPI} style={{ marginLeft: '0.5rem', padding: '0.3rem 0.8rem', backgroundColor: '#9c27b0', border: 'none', borderRadius: '6px', color: 'white', cursor: 'pointer' }}>
+    <div>
+      <Header></Header>
+      <div style={{ minHeight: '100vh', backgroundColor: '#121212', padding: '2rem' }}>
+        <div style={{marginBottom: '2rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', color: '#ffffff'}}>
+          <h2>Add New Calorie Entry</h2>
+          <input required placeholder="Food" value={form.food} onChange={(e) => setForm({ ...form, food: e.target.value.trim() })} />
+          <button onClick={fillFromNutritionAPI} style={{ marginLeft: '0.5rem', padding: '0.3rem 0.8rem', backgroundColor: '#9c27b0', border: 'none', borderRadius: '6px', color: 'white', cursor: 'pointer' }}>
           Fill Nutrition Info
         </button>
         <input required type="number" min="0" placeholder="Calories" value={form.calories} onChange={(e) => setForm({ ...form, calories: e.target.value.trim() })} />
-        <input required type="number" min="0" placeholder="Protein" value={form.protein} onChange={(e) => setForm({ ...form, protein: e.target.value.trim() })} />
-        <input required type="number" min="0" placeholder="Carbs" value={form.carbs} onChange={(e) => setForm({ ...form, carbs: e.target.value.trim() })} />
-        <input required type="number" min="0" placeholder="Fats" value={form.fats} onChange={(e) => setForm({ ...form, fats: e.target.value.trim() })} />
-        <input required type="date" max={new Date().toISOString().split("T")[0]} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value.trim() })} />
-        <button onClick={handleAddEntry} style={{marginTop: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#00bcd4', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}>
-          Add Entry </button>
-        </div>
-        {editId && (
-        <div style={{marginTop: '2rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', color: '#ffffff'}}>
-          <h2>Edit Calorie Entry</h2>
-          <input required placeholder="Food" value={form.food} onChange={(e) => setForm({ ...form, food: e.target.value.trim() })} />
-          <button onClick={fillFromNutritionAPI} style={{ marginLeft: '0.5rem', padding: '0.3rem 0.8rem', backgroundColor: '#9c27b0', border: 'none', borderRadius: '6px', color: 'white', cursor: 'pointer' }}>
-              Fill Nutrition Info
-          </button>
-          <input required type="number" min="0" placeholder="Calories" value={form.calories} onChange={(e) => setForm({ ...form, calories: e.target.value.trim() })} />
           <input required type="number" min="0" placeholder="Protein" value={form.protein} onChange={(e) => setForm({ ...form, protein: e.target.value.trim() })} />
           <input required type="number" min="0" placeholder="Carbs" value={form.carbs} onChange={(e) => setForm({ ...form, carbs: e.target.value.trim() })} />
           <input required type="number" min="0" placeholder="Fats" value={form.fats} onChange={(e) => setForm({ ...form, fats: e.target.value.trim() })} />
           <input required type="date" max={new Date().toISOString().split("T")[0]} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value.trim() })} />
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button onClick={handleEditEntry} style={{marginTop: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#4caf50', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}>
-              Save Changes
-            </button>
-            <button onClick={() => {
-              setEditId(null);
-              setForm({ food: '', calories: '', protein: '', carbs: '', fats: '', date: '' });
-            }} style={{marginTop: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#f44336', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}>
-              Cancel
-            </button>
+          <button onClick={handleAddEntry} style={{marginTop: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#00bcd4', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}>
+            Add Entry </button>
           </div>
-        </div>
-      )}
-      <h1 style={{ color: '#ffffff', fontSize: '2rem', marginBottom: '1rem' }}>Your Calorie Entries</h1>
-      {entries.length === 0 ? (
-        <div style={{ marginTop: '3rem', padding: '0 1rem', backgroundColor: '#1e1e1e', borderRadius: '12px', color: '#ffffff', textAlign: 'center'}}>
-          <p style={{ fontSize: '1.5rem', marginBottom: '1rem' }}> You haven't added any calorie entries yet </p>
-        </div>
-      ) : (
-        <ul style={{ color: '#ffffff', listStyle: 'none', paddingLeft: 0 }}>
-          {entries.map(entry => (
-            <li key={entry._id} style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px'}}>
-              <strong>{entry.food}</strong> ({new Date(entry.date).toLocaleDateString()})<br />
-              {entry.calories} cal | P: {entry.protein}g | C: {entry.carbs}g | F: {entry.fats}g
-              <button
-                  onClick={() => {
-                        setEditId(entry._id);
-                        setForm({ food: entry.food, calories: entry.calories.toString(), protein: entry.protein.toString(), carbs: entry.carbs.toString(), fats: entry.fats.toString(), 
-                          date: entry.date.slice(0, 10)});}}
-                        style={{ marginTop: '0.5rem', marginRight: '0.5rem', padding: '0.4rem 0.8rem', backgroundColor: '#2196f3', border: 'none', borderRadius: '6px', fontWeight: 'bold',
-                          cursor: 'pointer', color: 'white'}}> Edit </button>
-             <button onClick={() =>  handleRemoveEntry(entry._id)} style={{ marginTop: '0.5rem', marginRight: '0.5rem', padding: '0.4rem 0.8rem', backgroundColor: '#2196f3', 
-             border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', color: 'white'}}> Remove </button>
-            </li>
-          ))}
-        </ul>
-      )}
+          {editId && (
+          <div style={{marginTop: '2rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', color: '#ffffff'}}>
+            <h2>Edit Calorie Entry</h2>
+            <input required placeholder="Food" value={form.food} onChange={(e) => setForm({ ...form, food: e.target.value.trim() })} />
+            <button onClick={fillFromNutritionAPI} style={{ marginLeft: '0.5rem', padding: '0.3rem 0.8rem', backgroundColor: '#9c27b0', border: 'none', borderRadius: '6px', color: 'white', cursor: 'pointer' }}>
+              Fill Nutrition Info
+          </button>
+          <input required type="number" min="0" placeholder="Calories" value={form.calories} onChange={(e) => setForm({ ...form, calories: e.target.value.trim() })} />
+            <input required type="number" min="0" placeholder="Protein" value={form.protein} onChange={(e) => setForm({ ...form, protein: e.target.value.trim() })} />
+            <input required type="number" min="0" placeholder="Carbs" value={form.carbs} onChange={(e) => setForm({ ...form, carbs: e.target.value.trim() })} />
+            <input required type="number" min="0" placeholder="Fats" value={form.fats} onChange={(e) => setForm({ ...form, fats: e.target.value.trim() })} />
+            <input required type="date" max={new Date().toISOString().split("T")[0]} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value.trim() })} />
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button onClick={handleEditEntry} style={{marginTop: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#4caf50', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}>
+                Save Changes
+              </button>
+              <button onClick={() => {
+                setEditId(null);
+                setForm({ food: '', calories: '', protein: '', carbs: '', fats: '', date: '' });
+              }} style={{marginTop: '0.5rem', padding: '0.5rem 1rem', backgroundColor: '#f44336', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+        <h1 style={{ color: '#ffffff', fontSize: '2rem', marginBottom: '1rem' }}>Your Calorie Entries</h1>
+        {entries.length === 0 ? (
+          <div style={{ marginTop: '3rem', padding: '0 1rem', backgroundColor: '#1e1e1e', borderRadius: '12px', color: '#ffffff', textAlign: 'center'}}>
+            <p style={{ fontSize: '1.5rem', marginBottom: '1rem' }}> You haven't added any calorie entries yet </p>
+          </div>
+        ) : (
+          <ul style={{ color: '#ffffff', listStyle: 'none', paddingLeft: 0 }}>
+            {entries.map(entry => (
+              <li key={entry._id} style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px'}}>
+                <strong>{entry.food}</strong> ({new Date(entry.date).toLocaleDateString()})<br />
+                {entry.calories} cal | P: {entry.protein}g | C: {entry.carbs}g | F: {entry.fats}g
+                <button
+                    onClick={() => {
+                          setEditId(entry._id);
+                          setForm({ food: entry.food, calories: entry.calories.toString(), protein: entry.protein.toString(), carbs: entry.carbs.toString(), fats: entry.fats.toString(), 
+                            date: entry.date.slice(0, 10)});}}
+                          style={{ marginTop: '0.5rem', marginRight: '0.5rem', padding: '0.4rem 0.8rem', backgroundColor: '#2196f3', border: 'none', borderRadius: '6px', fontWeight: 'bold',
+                            cursor: 'pointer', color: 'white'}}> Edit </button>
+              <button onClick={() =>  handleRemoveEntry(entry._id)} style={{ marginTop: '0.5rem', marginRight: '0.5rem', padding: '0.4rem 0.8rem', backgroundColor: '#2196f3', 
+              border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', color: 'white'}}> Remove </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
