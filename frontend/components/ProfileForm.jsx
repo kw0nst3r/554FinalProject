@@ -1,32 +1,28 @@
-import styles from '../styles/Profile.module.css';
+import {Box, TextField, Button} from '@mui/material';
+import profileFormStyles from '../styles/profileStyles';
+
+const fields = [
+    {label: 'First Name', name: 'firstName', type: 'text'},
+    {label: 'Last Name', name: 'lastName', type: 'text'},
+    {label: 'Weight (lbs)', name: 'weight', type: 'number'},
+];
 
 export default function ProfileForm({form, onChange, onSubmit, onFileSelect}) {
-  return (
-    <form onSubmit={onSubmit} className={styles.form}>
-        <label>
-            First Name:
-            <input type="text" name="firstName" value={form.firstName} onChange={onChange} required />
-        </label>
-        <label>
-            Last Name:
-            <input type="text" name="lastName" value={form.lastName} onChange={onChange} required />
-        </label>
-        <label>
-            Weight (lbs):
-            <input type="number" name="weight" value={form.weight} onChange={onChange} required />
-        </label>
-        <label>
-            Profile Photo:
-            <input
-                type="file"
-                name="profilePhoto"
-                accept="image/*"
-                onChange={onFileSelect}
-            />
-        </label>
-        <div className={styles.actionRow}>
-            <button type="submit">Update Profile</button>
-        </div>
-    </form>
-  );
+    return (
+        <Box component="form" onSubmit={onSubmit} sx={profileFormStyles.formContainer}>
+            {fields.map(({ label, name, type }) => (
+                <TextField key={name} label={label} name={name} type={type} value={form[name]} onChange={onChange} required fullWidth sx={profileFormStyles.textField}/>
+            ))}
+            <Button variant="outlined" component="label" sx={profileFormStyles.uploadButton}>
+                Upload Profile Photo
+                <input type="file" hidden accept="image/*" onChange={onFileSelect} />
+            </Button>
+            {form.photoUrl && (
+                <Box component="img" src={form.photoUrl} alt="Preview" sx={{width: 128, height: 128, borderRadius: '50%', objectFit: 'cover', mx: 'auto', mt: 2}} />
+            )}
+            <Button type="submit" sx={profileFormStyles.submitButton}>
+                Update Profile
+            </Button>
+        </Box>
+    );
 }

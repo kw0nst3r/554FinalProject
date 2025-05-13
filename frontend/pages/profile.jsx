@@ -1,25 +1,25 @@
 import {useQuery, useMutation} from '@apollo/client';
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/router';
-import {auth } from '../firebase/FirebaseConfig';
+import {auth} from '../firebase/FirebaseConfig';
 import {GET_USER_BY_FIREBASE_UID} from '../graphql/queries';
 import {UPDATE_USER_PROFILE} from '../graphql/mutations';
-import styles from '../styles/Profile.module.css';
 import Header from '../components/Header.jsx';
-import ProfileForm from '../components/ProfileForm';
-import { Box, Typography, Button, CircularProgress, Avatar } from '@mui/material';
+import {Box, Typography, Button, Avatar, TextField, IconButton} from '@mui/material';
+import {profileStyles} from '../styles/profileStyles';
+import profileFormStyles from '../styles/profileStyles';
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function ProfilePage() {
-  // Firebase & Router
   const router = useRouter();
   const [firebaseUid, setFirebaseUid] = useState(null);
   const [mongoId, setMongoId] = useState(null);
-  // Profile state
   const [profile, setProfile] = useState({ firstName: '', lastName: '', weight: '' });
   const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
   const [form, setForm] = useState({ firstName: '', lastName: '', weight: '' });
-  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [statusMsg, setStatusMsg] = useState(null);
+  const [updateProfile] = useMutation(UPDATE_USER_PROFILE);
   // Firebase auth listener
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
@@ -36,36 +36,35 @@ export default function ProfilePage() {
     variables: {firebaseUid},
     skip: !firebaseUid
   });
-  const [updateProfile] = useMutation(UPDATE_USER_PROFILE);
   // Populate form with user data
   useEffect(() => {
     if (data?.getUserByFirebaseUid) {
       const {_id, name, bodyWeight, photoUrl} = data.getUserByFirebaseUid;
-      setMongoId(_id);
       const [firstName, ...rest] = name.trim().split(" ");
       const lastName = rest.join(" ");
       const weight = bodyWeight?.toString() || '';
+      setMongoId(_id);
       setProfile({firstName, lastName, weight, photoUrl});
       setForm({firstName, lastName, weight});
     }
   }, [data]);
   // Handle input changes
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    const {name, value} = e.target;
+    setForm(prev => ({...prev, [name]: value}));
   };
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    // const previewUrl = URL.createObjectURL(file);
+    // setForm(prev => ({...prev, photoUrl: previewUrl}));
     const formData = new FormData();
     formData.append('profilePhoto', file);
-    const res = await fetch('/api/uploadPhoto', {
-      method: 'POST',
-      body: formData,
-    });
+    const res = await fetch('/api/uploadPhoto', {method: 'POST', body: formData});
     const result = await res.json();
     if (res.ok) {
       setProfilePhotoUrl(result.url);
+      setForm(prev => ({ ...prev, photoUrl: result.url }));
     } else {
       alert('Upload failed: ' + result.error);
     }
@@ -83,11 +82,11 @@ export default function ProfilePage() {
         }
       });
       setStatusMsg({type: 'success', text: 'Profile updated successfully!'});
-      setProfile(prev => ({ ...form, photoUrl: profilePhotoUrl || prev.photoUrl }));
-      setShowForm(false);
+      setProfile({ ...form, photoUrl: profilePhotoUrl || form.photoUrl || profile.photoUrl || '' });
+      setEditing(false);
       refetch();
     } catch (err) {
-      setStatusMsg({ type: 'error', text: 'Error: ' + err.message });
+      setStatusMsg({type: 'error', text: 'Error: ' + err.message});
     }
   };
   useEffect(() => {
@@ -96,26 +95,49 @@ export default function ProfilePage() {
       return () => clearTimeout(timer);
     }
   }, [statusMsg]);
-  if (loading) return <p className={styles.loading}>Loading...</p>;
-  if (error) return <p className={styles.error}>Error: {error.message}</p>;
+  if (loading) return <Typography sx={profileStyles.loadingText}>Loading...</Typography>;
+  if (error) return <Typography sx={profileStyles.errorText}>Error: {error.message}</Typography>;
   return (
     <Box>
-        <Header/>
-        <Box sx={{ minHeight: '100vh', backgroundColor: '#1a1a1a', color: '#ffffff', py: 4, px: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Segoe UI, sans-serif'}}>
-          <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}> My Profile </Typography>
-          <Button onClick={() => setShowForm(prev => !prev)} sx={{mb: 2, px: 2, py: 1, backgroundColor: '#444', color: '#fff', borderRadius: 1, fontWeight: 500, '&:hover': {backgroundColor: '#666'}}}>
-            {showForm ? 'Cancel' : 'Edit Profile'}
-          </Button>
-          {showForm && (<ProfileForm form={form} onChange={handleChange} onSubmit={handleSubmit} onFileSelect={handleFileSelect}/>)}
-          {statusMsg && (<Typography sx={{ mt: 2, fontWeight: 500, color: statusMsg.type === 'success' ? '#4caf50' : '#ff4d4f'}}>{statusMsg.text}</Typography>)}
-          <Box sx={{ mt: 4, backgroundColor: '#2a2a2a', px: 4, py: 3, borderRadius: 2, boxShadow: '0 4px 12px rgba(255, 255, 255, 0.05)', maxWidth: 500, width: '100%', textAlign: 'center'}}>
-            <Typography variant="h5" sx={{ mb: 2 }}> Profile Info </Typography>
-            <Typography><strong>First Name:</strong> {profile.firstName}</Typography>
-            <Typography><strong>Last Name:</strong> {profile.lastName}</Typography>
-            <Typography><strong>Body Weight:</strong> {profile.weight} lbs</Typography>
-            {profile.photoUrl && ( <Avatar src={profile.photoUrl} alt="Profile" sx={{ width: 128, height: 128, mt: 2, mb: 1, mx: 'auto', borderRadius: '50%', objectFit: 'cover'}}/>)}
-          </Box>
+      <Header />
+      <Box sx={profileStyles.container}>
+        <Box sx={{ ...profileStyles.profileCard, position: 'relative' }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>My Profile</Typography>
+
+          {!editing && (
+            <IconButton onClick={() => setEditing(true)} sx={{ position: 'absolute', top: 16, right: 16, color: 'white' }}>
+              <EditIcon />
+            </IconButton>
+          )}
+          {editing ? (
+            <Box component="form" onSubmit={handleSubmit} sx={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              <Box sx={profileFormStyles.formInputs}>
+                <TextField variant="outlined" label="First Name" name="firstName" value={form.firstName} onChange={handleChange} fullWidth sx={profileFormStyles.textField} />
+                <TextField variant="outlined" label="Last Name" name="lastName" value={form.lastName} onChange={handleChange} fullWidth sx={profileFormStyles.textField} />
+                <TextField variant="outlined" label="Weight (lbs)" name="weight" type="number" value={form.weight} onChange={handleChange} fullWidth sx={profileFormStyles.textField} />
+                <Button variant="outlined" component="label" sx={profileFormStyles.uploadButton}>Upload Photo<input type="file" hidden accept="image/*" onChange={handleFileSelect} /></Button>
+                {form.photoUrl && <Avatar src={form.photoUrl} alt="Preview" sx={profileStyles.avatar} />}
+              </Box>
+              <Box sx={profileFormStyles.buttonRow}>
+                <Button type="submit" sx={profileFormStyles.submitButton}>Save Changes</Button>
+                <Button onClick={() => setEditing(false)} sx={profileFormStyles.secondaryButton}>Cancel</Button>
+              </Box>
+            </Box>
+          ) : (
+            <>
+              <Typography><strong>First Name:</strong> {profile.firstName}</Typography>
+              <Typography><strong>Last Name:</strong> {profile.lastName}</Typography>
+              <Typography><strong>Body Weight:</strong> {profile.weight} lbs</Typography>
+              {profile.photoUrl && <Avatar src={profile.photoUrl} alt="Profile" sx={profileStyles.avatar} />}
+            </>
+          )}
+          {statusMsg && (
+            <Typography sx={profileStyles.statusText(statusMsg.type)}>
+              {statusMsg.text}
+            </Typography>
+          )}
         </Box>
       </Box>
+    </Box>
   );
 }
