@@ -76,6 +76,34 @@ export const REMOVE_CALORIE_ENTRY = gql`
   }
 `;
 
+export const ADD_BODY_WEIGHT_ENTRY = gql`
+  mutation AddBodyWeightEntry($userId: String!, $weight: Float!, $date: String!) {
+    addBodyWeightEntry(userId: $userId, weight: $weight, date: $date) {
+      _id
+      weight
+      date
+    }
+  }
+`;
+
+export const EDIT_BODY_WEIGHT_ENTRY = gql`
+  mutation EditBodyWeightEntry($_id: String!, $weight: Float, $date: String) {
+    editBodyWeightEntry(_id: $_id, weight: $weight, date: $date) {
+      _id
+      weight
+      date
+    }
+  }
+`;
+
+export const REMOVE_BODY_WEIGHT_ENTRY = gql`
+  mutation RemoveBodyWeightEntry($_id: String!) {
+    removeBodyWeightEntry(_id: $_id) {
+      _id
+    }
+  }
+`;
+
 export const ADD_WORKOUT_ROUTINE = gql`
   mutation AddWorkoutRoutine($userId: String!, $days: [WorkoutDayInput!]!) {
     addWorkoutRoutine(userId: $userId, days: $days) {

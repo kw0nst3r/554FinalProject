@@ -15,7 +15,15 @@ export const GET_CALORIE_ENTRIES = gql`
     }
   }
 `;
-
+export const GET_BODY_WEIGHT_ENTRIES = gql`
+  query GetBodyWeightEntries($userId: String!) {
+    bodyWeightEntries(userId: $userId) {
+      _id
+      weight
+      date
+    }
+  }
+`;
 //Thomas Kwon- Do not change (yet)
 //Retrieves first name, last name, and weight based on Firebase UID
 export const GET_USER_PROFILE = gql`
@@ -27,8 +35,11 @@ export const GET_USER_PROFILE = gql`
     }
   }
 `;
+<<<<<<< Updated upstream
 
 // WORKING DO NOT CHANGE BELOW
+=======
+>>>>>>> Stashed changes
 export const GET_USER_BY_FIREBASE_UID = gql`
   query GetUserByFirebaseUid($firebaseUid: String!) {
     getUserByFirebaseUid(firebaseUid: $firebaseUid) {
