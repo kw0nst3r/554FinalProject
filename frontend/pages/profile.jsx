@@ -7,6 +7,7 @@ import {UPDATE_USER_PROFILE} from '../graphql/mutations';
 import styles from '../styles/Profile.module.css';
 import Header from '../components/Header.jsx';
 import ProfileForm from '../components/ProfileForm';
+import { Box, Typography, Button, CircularProgress, Avatar } from '@mui/material';
 
 export default function ProfilePage() {
   // Firebase & Router
@@ -75,11 +76,7 @@ export default function ProfilePage() {
     e.preventDefault();
     try {
       await updateProfile({
-        variables: {
-          id: mongoId,
-          name: `${form.firstName} ${form.lastName}`,
-          bodyWeight: parseFloat(form.weight)
-        }
+        variables: { id: mongoId, name: `${form.firstName} ${form.lastName}`, bodyWeight: parseFloat(form.weight)}
       });
       setStatusMsg({type: 'success', text: 'Profile updated successfully!'});
       setProfile(prev => ({ ...form, photoUrl: prev.photoUrl }));
@@ -98,42 +95,23 @@ export default function ProfilePage() {
   if (loading) return <p className={styles.loading}>Loading...</p>;
   if (error) return <p className={styles.error}>Error: {error.message}</p>;
   return (
-    <div>
-      <Header></Header>
-      <div className={styles.container}>
-        <h1>My Profile</h1>
-        <button onClick={() => setShowForm(prev => !prev)} className={styles.editButton}>
-          {showForm ? 'Cancel' : 'Edit Profile'}
-        </button>
-        {showForm && (
-          <ProfileForm
-            form={form}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            onFileSelect={handleFileSelect}
-          />
-        )}
-        {statusMsg && (
-          <p className={statusMsg.type === 'success' ? styles.successMsg : styles.errorMsg}>
-            {statusMsg.text}
-          </p>
-        )}
-        <div className={styles.profileDetails}>
-          <h2 className={styles.profileTitle}>Profile Info</h2>
-          <p><strong>First Name:</strong> {profile.firstName}</p>
-          <p><strong>Last Name:</strong> {profile.lastName}</p>
-          <p><strong>Body Weight:</strong> {profile.weight} lbs</p>
-          {profile.photoUrl && (
-            <img
-              src={profile.photoUrl}
-              alt="Profile"
-              className={styles.profileImage}
-              width={128}
-              height={128}
-            />
-          )}
-        </div>
-      </div>
-    </div>
+    <Box>
+        <Header/>
+        <Box sx={{ minHeight: '100vh', backgroundColor: '#1a1a1a', color: '#ffffff', py: 4, px: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Segoe UI, sans-serif'}}>
+          <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}> My Profile </Typography>
+          <Button onClick={() => setShowForm(prev => !prev)} sx={{mb: 2, px: 2, py: 1, backgroundColor: '#444', color: '#fff', borderRadius: 1, fontWeight: 500, '&:hover': {backgroundColor: '#666'}}}>
+            {showForm ? 'Cancel' : 'Edit Profile'}
+          </Button>
+          {showForm && (<ProfileForm form={form} onChange={handleChange} onSubmit={handleSubmit} onFileSelect={handleFileSelect}/>)}
+          {statusMsg && (<Typography sx={{ mt: 2, fontWeight: 500, color: statusMsg.type === 'success' ? '#4caf50' : '#ff4d4f'}}>{statusMsg.text}</Typography>)}
+          <Box sx={{ mt: 4, backgroundColor: '#2a2a2a', px: 4, py: 3, borderRadius: 2, boxShadow: '0 4px 12px rgba(255, 255, 255, 0.05)', maxWidth: 500, width: '100%', textAlign: 'center'}}>
+            <Typography variant="h5" sx={{ mb: 2 }}> Profile Info </Typography>
+            <Typography><strong>First Name:</strong> {profile.firstName}</Typography>
+            <Typography><strong>Last Name:</strong> {profile.lastName}</Typography>
+            <Typography><strong>Body Weight:</strong> {profile.weight} lbs</Typography>
+            {profile.photoUrl && ( <Avatar src={profile.photoUrl} alt="Profile" sx={{ width: 128, height: 128, mt: 2, mb: 1, mx: 'auto', borderRadius: '50%', objectFit: 'cover'}}/>)}
+          </Box>
+        </Box>
+      </Box>
   );
 }
