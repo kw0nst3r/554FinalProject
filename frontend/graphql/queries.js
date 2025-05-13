@@ -41,6 +41,7 @@ export const GET_USER_BY_FIREBASE_UID = gql`
       _id
       name
       bodyWeight
+      photoUrl     
     }
   }
 `;

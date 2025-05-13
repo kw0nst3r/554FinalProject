@@ -7,6 +7,7 @@ export const typeDefs = gql`
      _id: String!
      name: String!
      bodyWeight: Float!
+     photoUrl: String
      workouts: [Workout!]!
      calorieEntries: [CalorieEntry!]!
      bodyWeightEntries: [BodyWeightEntry!]!
@@ -168,7 +169,7 @@ type Mutation {
   updateUserProfile(userId: String!, firstName: String!, lastName: String!, weight: Float!): User
 
   addUser(name: String!, bodyWeight: Float!, firebaseUid: String!): User
-  editUser(_id: String!, name: String, bodyWeight: Float): User
+  editUser(_id: String!, name: String, bodyWeight: Float, photoUrl: String): User
   removeUser(_id: String!): User
 
   addWorkout(userId: String!, name: String!, date: String!): Workout!
