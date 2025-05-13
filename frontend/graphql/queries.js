@@ -35,11 +35,6 @@ export const GET_USER_PROFILE = gql`
     }
   }
 `;
-<<<<<<< Updated upstream
-=======
-
-// WORKING DO NOT CHANGE BELOW
->>>>>>> Stashed changes
 export const GET_USER_BY_FIREBASE_UID = gql`
   query GetUserByFirebaseUid($firebaseUid: String!) {
     getUserByFirebaseUid(firebaseUid: $firebaseUid) {
