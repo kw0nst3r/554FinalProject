@@ -25,20 +25,20 @@ const CreateRoutine = ({ onSubmit }) => {
     }
 
     const allMuscles = {
-      chest: 0,
-      back: 0,
-      quads: 0,
-      hamstrings: 0,
-      shoulders: 0,
-      biceps: 0,
-      triceps: 0,
-      front_delts: 0,
-      side_delts: 0,
-      rear_delts: 0,
-      calves: 0,
-      core: 0,
-      obliques: 0,
-      abs: 0,
+      Chest: 0,
+      Back: 0,
+      Quads: 0,
+      Hamstrings: 0,
+      Shoulders: 0,
+      Ticeps: 0,
+      Triceps: 0,
+      Frontdelts: 0,
+      Sidedelts: 0,
+      Reardelts: 0,
+      Calves: 0,
+      Core: 0,
+      Obliques: 0,
+      Abs: 0,
     };
 
     const muscleGroups = { ...allMuscles };
