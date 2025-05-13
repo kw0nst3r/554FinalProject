@@ -6,6 +6,7 @@ import { GET_USER_BY_FIREBASE_UID, GET_BODY_WEIGHT_ENTRIES} from '../graphql/que
 import { ADD_BODY_WEIGHT_ENTRY, EDIT_BODY_WEIGHT_ENTRY, REMOVE_BODY_WEIGHT_ENTRY} from '../graphql/mutations';
 import WeightGraph from './WeightGraph.jsx';
 import { Box, Typography, Paper, TextField, Button, List, ListItem, Input } from '@mui/material';
+import Header from '../components/Header.jsx';
 
 export default function WeightsPage() {
   const router = useRouter();
@@ -117,57 +118,60 @@ export default function WeightsPage() {
   if (loading) return <p style={{ color: '#ffffff', padding: '2rem' }}>Loading...</p>;
   if (errorMsg) return <p style={{ color: '#ffffff', padding: '2rem' }}>{errorMsg}</p>;
 return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: '#121212', padding: '2rem' }}>
-      <Paper sx={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', color: '#ffffff' }}>
-        <Typography variant="h6">
-          {editId ? 'Edit Weight Entry' : 'Add New Weight Entry'}
-        </Typography>
-        <Input fullWidth required type="number" min="0" placeholder="Weight (lbs)" value={form.weight}
-          onChange={(e) => setForm({ ...form, weight: e.target.value.trim() })} sx={{ my: 2, color: '#fff' }}/>
-        <Input fullWidth required type="date" inputProps={{ max: new Date().toISOString().split('T')[0] }} value={form.date}
-          onChange={(e) => setForm({ ...form, date: e.target.value.trim() })} sx={{ mb: 2, color: '#fff' }}/>
-        {editId ? (
-          <Box sx={{ display: 'flex', gap: '1rem' }}>
-            <Button onClick={handleEditEntry} variant="contained" sx={{ backgroundColor: '#4caf50' }}> Save Changes </Button>
-            <Button onClick={() => {
-                setEditId(null);
-                setForm({ weight: '', date: '' });
-              }} variant="contained" sx={{ backgroundColor: '#f44336' }}> Cancel </Button>
-          </Box>
-        ) : (
-          <Button onClick={handleAddEntry} variant="contained" sx={{ backgroundColor: '#00bcd4' }}> Add Entry </Button>
-        )}
-      </Paper>
-
-      <Typography variant="h4" sx={{ color: '#ffffff', marginBottom: '1rem' }}>Your Weight Entries</Typography>
-      {entries.length === 0 ? (
-        <Paper sx={{ marginTop: '3rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '12px', color: '#ffffff', textAlign: 'center' }}>
-          <Typography variant="body1" sx={{ fontSize: '1.5rem', marginBottom: '1rem' }}>You haven't added any weight entries yet</Typography>
+  <div>
+      <Header></Header>
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#121212', padding: '2rem' }}>
+        <Paper sx={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', color: '#ffffff' }}>
+          <Typography variant="h6">
+            {editId ? 'Edit Weight Entry' : 'Add New Weight Entry'}
+          </Typography>
+          <Input fullWidth required type="number" min="0" placeholder="Weight (lbs)" value={form.weight}
+            onChange={(e) => setForm({ ...form, weight: e.target.value.trim() })} sx={{ my: 2, color: '#fff' }}/>
+          <Input fullWidth required type="date" inputProps={{ max: new Date().toISOString().split('T')[0] }} value={form.date}
+            onChange={(e) => setForm({ ...form, date: e.target.value.trim() })} sx={{ mb: 2, color: '#fff' }}/>
+          {editId ? (
+            <Box sx={{ display: 'flex', gap: '1rem' }}>
+              <Button onClick={handleEditEntry} variant="contained" sx={{ backgroundColor: '#4caf50' }}> Save Changes </Button>
+              <Button onClick={() => {
+                  setEditId(null);
+                  setForm({ weight: '', date: '' });
+                }} variant="contained" sx={{ backgroundColor: '#f44336' }}> Cancel </Button>
+            </Box>
+          ) : (
+            <Button onClick={handleAddEntry} variant="contained" sx={{ backgroundColor: '#00bcd4' }}> Add Entry </Button>
+          )}
         </Paper>
-      ) : (
-        <List sx={{ color: '#ffffff', paddingLeft: 0 }}>
-          {entries.map((entry) => (
-            <ListItem key={entry._id} sx={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', display: 'flex', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography><strong>{new Date(entry.date).toLocaleDateString()}</strong></Typography>
-                <Typography>{entry.weight} lbs</Typography>
-              </Box>
-              <Box>
-                <Button onClick={() => {
-                    setEditId(entry._id);
-                    setForm({ weight: entry.weight.toString(), date: entry.date.slice(0, 10) });
-                  }} variant="contained" sx={{ marginTop: '0.5rem', marginRight: '0.5rem', backgroundColor: '#2196f3' }}>
-                  Edit
-                </Button>
-                <Button onClick={() => handleRemoveEntry(entry._id)} variant="contained" sx={{ marginTop: '0.5rem', backgroundColor: '#2196f3' }}>
-                  Remove
-                </Button>
-              </Box>
-            </ListItem>
-          ))}
-        </List>
-      )}
-      {entries.length > 0 && <WeightGraph entries={entries} />}
-    </Box>
+
+        <Typography variant="h4" sx={{ color: '#ffffff', marginBottom: '1rem' }}>Your Weight Entries</Typography>
+        {entries.length === 0 ? (
+          <Paper sx={{ marginTop: '3rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '12px', color: '#ffffff', textAlign: 'center' }}>
+            <Typography variant="body1" sx={{ fontSize: '1.5rem', marginBottom: '1rem' }}>You haven't added any weight entries yet</Typography>
+          </Paper>
+        ) : (
+          <List sx={{ color: '#ffffff', paddingLeft: 0 }}>
+            {entries.map((entry) => (
+              <ListItem key={entry._id} sx={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#1e1e1e', borderRadius: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography><strong>{new Date(entry.date).toLocaleDateString()}</strong></Typography>
+                  <Typography>{entry.weight} lbs</Typography>
+                </Box>
+                <Box>
+                  <Button onClick={() => {
+                      setEditId(entry._id);
+                      setForm({ weight: entry.weight.toString(), date: entry.date.slice(0, 10) });
+                    }} variant="contained" sx={{ marginTop: '0.5rem', marginRight: '0.5rem', backgroundColor: '#2196f3' }}>
+                    Edit
+                  </Button>
+                  <Button onClick={() => handleRemoveEntry(entry._id)} variant="contained" sx={{ marginTop: '0.5rem', backgroundColor: '#2196f3' }}>
+                    Remove
+                  </Button>
+                </Box>
+              </ListItem>
+            ))}
+          </List>
+        )}
+        {entries.length > 0 && <WeightGraph entries={entries} />}
+      </Box>
+    </div>
   );
 }
