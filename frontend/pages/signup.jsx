@@ -7,6 +7,7 @@ import styles from '../styles/AuthLayout.module.css';
 import {doCreateUserWithEmailAndPassword} from '../firebase/FirebaseFunctions';
 import {auth} from '../firebase/FirebaseConfig';
 import {ADD_USER} from '../graphql/queries';
+import { Box, TextField, Typography, Button, Paper } from '@mui/material';
 
 export default function SignupPage() {
     const router = useRouter();
@@ -53,47 +54,40 @@ export default function SignupPage() {
         }
     };
     return (
-        <AuthLayout>
-            <div className={styles.signupContainer}>
-                <div className={styles.formBody}>
-                    <h2>Sign Up</h2>
-                    <div className={styles.formInputs}>
-                        <div className={styles.inputGroup}>
-                            <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} required/>
-                            {errors.email && <p className={styles.error}>{errors.email}</p>}
-                        </div>
-                        <div className={styles.inputGroup}>
-                            <input type="text" placeholder="First Name" onChange={(e) => setFirstName(e.target.value)} required/>
-                            {errors.firstName && <p className={styles.error}>{errors.firstName}</p>}
-                        </div>
-                        <div className={styles.inputGroup}>
-                            <input type="text" placeholder="Last Name" onChange={(e) => setLastName(e.target.value)} required/>
-                            {errors.lastName && <p className={styles.error}>{errors.lastName}</p>}
-                        </div>
-                        <div className={styles.inputGroup}>
-                            <input type="number" placeholder="Body Weight (lbs)" min="50" max="500" onChange={(e) => setWeight(e.target.value)} required/>
-                            {errors.weight && <p className={styles.error}>{errors.weight}</p>}
-                        </div>
-                        <div className={styles.inputGroup}>
-                            <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required/>
-                            {errors.password && <p className={styles.error}>{errors.password}</p>}
-                        </div>
-                        <div className={styles.inputGroup}>
-                            <input type="password" placeholder="Confirm Password" onChange={(e) => setConfirmPassword(e.target.value)} required/>
-                            {errors.confirmPassword && <p className={styles.error}>{errors.confirmPassword}</p>}
-                        </div>
-                    </div>
-                    {errors.general && <p className={styles.error}>{errors.general}</p>}
-                    <div className={styles.buttonRow}>
-                        <button type="button" className={styles.primaryButton} onClick={handleSignup}>
-                            Create Account
-                        </button>
-                        <Link href="/login" legacyBehavior>
-                            <button type="button">Log In</button>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </AuthLayout>
+     <AuthLayout>
+      <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, height: '100%', overflowY: 'auto' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+            maxWidth: 400, width: '100%', mx: 'auto', my: 4, bgcolor: '#D7D9D7', borderRadius: 2,
+            p: 4, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'}}>
+          <Typography variant="h5" sx={{ mb: 3, color: '#2c2d2e' }}>Sign Up</Typography>
+          {[
+            { label: 'Email', value: email, set: setEmail, type: 'email', name: 'email' },
+            { label: 'First Name', value: firstName, set: setFirstName, type: 'text', name: 'firstName' },
+            { label: 'Last Name', value: lastName, set: setLastName, type: 'text', name: 'lastName' },
+            { label: 'Body Weight (lbs)', value: weight, set: setWeight, type: 'number', name: 'weight', inputProps: { min: 50, max: 500 } },
+            { label: 'Password', value: password, set: setPassword, type: 'password', name: 'password' },
+            { label: 'Confirm Password', value: confirmPassword, set: setConfirmPassword, type: 'password', name: 'confirmPassword' }
+          ].map(({ label, value, set, type, name, inputProps }) => (
+            <Box key={name} sx={{ mb: 2, width: '100%' }}>
+              <TextField fullWidth variant="outlined" label={label} type={type} value={value}
+                onChange={(e) => set(e.target.value)}
+                inputProps={inputProps} sx={{ '& .MuiInputBase-root': { backgroundColor: '#CDD5D1' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#c7c7c7', borderWidth: 2 }}}/>
+              {errors[name] && (<Typography variant="body2" sx={{ color: '#C16E70', mt: 0.5, fontSize: '0.8rem', textAlign: 'center' }}>{errors[name]}</Typography>)}
+            </Box>
+          ))}
+          {errors.general && (
+            <Typography variant="body2" sx={{ color: '#C16E70', textAlign: 'center', mb: 2 }}>{errors.general}</Typography>
+          )}
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
+            <Button onClick={handleSignup} variant="contained" sx={{ backgroundColor: '#C57B57', '&:hover': { backgroundColor: '#A96240' }, borderRadius: 2 }}>
+              Create Account
+            </Button>
+            <Link href="/login" legacyBehavior>
+                <Button variant="contained" sx={{ backgroundColor: '#a2a2a2', '&:hover': { backgroundColor: '#8a8a8a' }, borderRadius: 2 }}>Log In</Button>
+            </Link>
+          </Box>
+        </Box>
+      </Box>
+    </AuthLayout>
     );
 }
