@@ -100,19 +100,21 @@ export default function WorkoutsPage() {
             textAlign: 'center'
           }}>
             <p style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
-              You haven’t added any workouts yet
+              You haven’t added any workouts yet!
             </p>
-            <div style={{
-              display: 'inline-block',
-              padding: '0.5rem 1.5rem',
-              backgroundColor: '#333',
-              borderRadius: '8px',
-              color: '#00bcd4',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              transition: 'background 0.3s'
-            }}>
+            <div
+              onClick={() => router.push('/createroutine')}
+              style={{
+                display: 'inline-block',
+                padding: '0.5rem 1.5rem',
+                backgroundColor: '#333',
+                borderRadius: '8px',
+                color: '#00bcd4',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                transition: 'background 0.3s'
+              }}>
               [+ Add Workout]
             </div>
           </div>
