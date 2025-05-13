@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import exercisePool from './/exercisePool';
+import exercisePool from './exercisePool';
 import { useMutation } from '@apollo/client';
-import { ADD_WORKOUT_ROUTINE } from '../graphql/mutations';
+import { useRouter } from 'next/router';
 import { getAuth } from 'firebase/auth';
+import { ADD_WORKOUT_ROUTINE } from '../graphql/mutations';
+import { GET_USER_BY_FIREBASE_UID } from '../graphql/queries';
+import client from '../apollo/client';
 
 const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
   const [routineName, setRoutineName] = useState('');
@@ -14,8 +17,9 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
   const [dayToRepeat, setDayToRepeat] = useState('');
   const [editingDayIndex, setEditingDayIndex] = useState(null);
   const [addRoutine] = useMutation(ADD_WORKOUT_ROUTINE);
+  const router = useRouter();
 
-  const addExercise = () => {
+  const addExerciseToDay = () => {
     if (!selectedExercise || !sets) return;
     const exercise = exercisePool.find(e => e.name === selectedExercise);
     if (!exercise) return;
@@ -48,6 +52,7 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
 
     if (!user) {
       alert('User not logged in');
+      router.push('/login');
       return;
     }
 
@@ -57,9 +62,22 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
     }
 
     try {
+      const { data } = await client.query({
+        query: GET_USER_BY_FIREBASE_UID,
+        variables: { firebaseUid: user.uid },
+        fetchPolicy: 'network-only'
+      });
+
+      const mongoUserId = data?.getUserByFirebaseUid?._id;
+
+      if (!mongoUserId) {
+        alert('User not found in database.');
+        return;
+      }
+
       await addRoutine({
         variables: {
-          userId: user.uid,
+          userId: mongoUserId,
           routineName: routineName.trim(),
           days: days.map(d => ({
             name: d.name,
@@ -73,6 +91,7 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
       });
 
       alert('Routine saved!');
+      router.push('/workouts');
     } catch (err) {
       console.error('Error saving routine:', err);
       alert('Failed to save routine.');
@@ -93,13 +112,7 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
 
   const undertrained = () => {
     const actual = totalSetsByMuscle();
-    const suggestions = [];
-    for (const muscle in adjustedSets) {
-      if ((actual[muscle] || 0) < adjustedSets[muscle]) {
-        suggestions.push(muscle);
-      }
-    }
-    return suggestions;
+    return Object.keys(adjustedSets).filter(m => (actual[m] || 0) < adjustedSets[m]);
   };
 
   const muscles = Array.isArray(exercisePool)
@@ -108,7 +121,6 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
 
   return (
     <div style={{ marginTop: '2rem', color: '#fff' }}>
-      {/* Routine Name */}
       <div style={{ marginBottom: '1rem' }}>
         <label style={{ display: 'block', marginBottom: '0.5rem' }}>Routine Name</label>
         <input
@@ -121,7 +133,6 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
         />
       </div>
 
-      {/* Build Days */}
       {days.length < frequency ? (
         <>
           <h2>Day {days.length + 1}: Build Your Routine</h2>
@@ -145,7 +156,6 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
         </div>
       )}
 
-      {/* Muscle Group Selector */}
       <div>
         <h3>Select a muscle group</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -167,7 +177,6 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
         </div>
       </div>
 
-      {/* Exercise Selector */}
       {currentMuscle && (
         <div style={{ marginTop: '1rem' }}>
           <h4>Choose an exercise for {currentMuscle}</h4>
@@ -177,11 +186,9 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
             style={{ padding: '0.5rem', width: '100%' }}
           >
             <option value="">-- Select Exercise --</option>
-            {exercisePool
-              .filter(ex => ex.muscles.includes(currentMuscle))
-              .map(ex => (
-                <option key={ex.name} value={ex.name}>{ex.name}</option>
-              ))}
+            {exercisePool.filter(ex => ex.muscles.includes(currentMuscle)).map(ex => (
+              <option key={ex.name} value={ex.name}>{ex.name}</option>
+            ))}
           </select>
 
           <input
@@ -193,104 +200,40 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
             style={{ marginTop: '0.5rem', padding: '0.5rem', width: '100%' }}
           />
 
-          <button onClick={addExercise} style={{ marginTop: '0.5rem', padding: '0.5rem 1rem' }}>
+          <button onClick={addExerciseToDay} style={{ marginTop: '0.5rem', padding: '0.5rem 1rem' }}>
             Add Exercise
           </button>
         </div>
       )}
 
-      {/* Current Day Exercises */}
       {currentDay.exercises.length > 0 && (
-          <div style={{ marginTop: '1rem' }}>
-            <h4>Exercises Added:</h4>
-            <ul>
-              {currentDay.exercises.map((ex, idx) => (
-                <li key={idx}>
-                  {ex.name} - {ex.sets} sets
-                  <button
-                    onClick={() => {
-                      setCurrentDay(prev => ({
-                        ...prev,
-                        exercises: prev.exercises.filter((_, i) => i !== idx)
-                      }));
-                    }}
-                    style={{
-                      marginLeft: '1rem',
-                      color: 'red',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
-            
-            <div style={{ marginTop: '1rem' }}>
-              <h4>Suggestions for this day:</h4>
-              <ul>
-                {undertrained().map(m => (
-                  <li key={m}>
-                    Add more sets for: <strong>{m}</strong>{' '}
-                    <button onClick={() => setCurrentMuscle(m)} style={{ marginLeft: '1rem' }}>
-                      Add Exercise
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {currentDay.exercises.length >= 4 && (
-              <button onClick={finalizeDay} style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}>
-                Finish Day {days.length + 1}
-              </button>
-            )}
-          </div>
-        )}
-
-
-      {/* Repeat Day + Save */}
-      {days.length > 0 && (
-        <div style={{ marginTop: '2rem' }}>
-          <h4>Or repeat a previous day:</h4>
-          <select
-            value={dayToRepeat}
-            onChange={(e) => setDayToRepeat(e.target.value)}
-            style={{ padding: '0.5rem', marginRight: '1rem' }}
-          >
-            <option value="">-- Select Day to Repeat --</option>
-            {days.map((d, i) => (
-              <option key={i} value={i}>
-                {d.name || `Day ${i + 1}`}
-              </option>
+        <div style={{ marginTop: '1rem' }}>
+          <h4>Exercises Added:</h4>
+          <ul>
+            {currentDay.exercises.map((ex, idx) => (
+              <li key={idx}>
+                {ex.name} - {ex.sets} sets
+                <button
+                  onClick={() => setCurrentDay(prev => ({
+                    ...prev,
+                    exercises: prev.exercises.filter((_, i) => i !== idx)
+                  }))}
+                  style={{ marginLeft: '1rem', color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  ✕
+                </button>
+              </li>
             ))}
-          </select>
-          <button
-            onClick={() => {
-              if (dayToRepeat === '') return;
-              const repeated = days[parseInt(dayToRepeat)];
-              setCurrentDay({ ...repeated, name: repeated.name + ' (Edited Copy)' });
-              setEditingDayIndex(days.length);
-              setDayToRepeat('');
-            }}
-            disabled={dayToRepeat === ''}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#333',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer'
-            }}
-          >
-            Add & Edit Repeated Day
-          </button>
+          </ul>
+
+          {currentDay.exercises.length >= 4 && (
+            <button onClick={finalizeDay} style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}>
+              Finish Day {days.length + 1}
+            </button>
+          )}
         </div>
       )}
 
-      {/* Summary and Suggestions */}
       {days.length > 0 && (
         <div style={{ marginTop: '2rem' }}>
           <h3>Routine Summary</h3>

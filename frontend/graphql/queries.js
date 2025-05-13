@@ -60,3 +60,20 @@ export const GET_WORKOUTS = gql`
     }
   }
 `;
+
+export const GET_WORKOUT_ROUTINES = gql`
+  query GetWorkoutRoutines($userId: String!) {
+    getWorkoutRoutines(userId: $userId) {
+      _id
+      routineName
+      days {
+        name
+        exercises {
+          name
+          sets
+          muscles
+        }
+      }
+    }
+  }
+`;

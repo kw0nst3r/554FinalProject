@@ -159,6 +159,7 @@ export const typeDefs = gql`
      getScheduledWorkouts(userId: String!, date: String!): [Workout!]!
  
      getPersonalRecords(userId: String!): [PersonalRecord!]!
+     getWorkoutRoutines(userId: String!): [WorkoutRoutine!]!
    }
 ####################
 # Mutations

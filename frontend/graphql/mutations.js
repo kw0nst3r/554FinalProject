@@ -134,3 +134,18 @@ export const UPDATE_USER_PROFILE = gql`
     }
   }
 `;
+export const ADD_WORKOUT = gql`
+  mutation AddWorkout($userId: String!, $name: String!, $date: String!) {
+    addWorkout(userId: $userId, name: $name, date: $date) {
+      _id
+    }
+  }
+`;
+
+export const ADD_EXERCISE = gql`
+  mutation AddExercise($workoutId: String!, $name: String!, $sets: [SetInput!]!) {
+    addExercise(workoutId: $workoutId, name: $name, sets: $sets) {
+      _id
+    }
+  }
+`;

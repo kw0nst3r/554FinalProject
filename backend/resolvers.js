@@ -96,6 +96,12 @@ export const resolvers = {
       if (!user) throw new GraphQLError("User not found for provided Firebase UID.", { extensions: { code: "NOT_FOUND" } });
       user._id = user._id.toString();
       return user;
+    },
+
+    getWorkoutRoutines: async (_, { userId }) => {
+      const workoutRoutinesCollection = await workoutRoutinesCollectionFn();
+      const routines = await workoutRoutinesCollection.find({ userId }).toArray();
+      return routines.map(r => ({ ...r,_id: r._id.toString()}));
     }
   },
 
