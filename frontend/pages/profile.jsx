@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [mongoId, setMongoId] = useState(null);
   // Profile state
   const [profile, setProfile] = useState({ firstName: '', lastName: '', weight: '' });
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
   const [form, setForm] = useState({ firstName: '', lastName: '', weight: '' });
   const [showForm, setShowForm] = useState(false);
   const [statusMsg, setStatusMsg] = useState(null);
@@ -52,6 +53,23 @@ export default function ProfilePage() {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('profilePhoto', file);
+    const res = await fetch('/api/uploadPhoto', {
+      method: 'POST',
+      body: formData,
+    });
+    const result = await res.json();
+    if (res.ok) {
+      setProfilePhotoUrl(result.url);
+      setProfile(prev => ({ ...prev, photoUrl: result.url }));
+    } else {
+      alert('Upload failed: ' + result.error);
+    }
+  };
   // Submit mutation to update user profile
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,7 +82,7 @@ export default function ProfilePage() {
         }
       });
       setStatusMsg({type: 'success', text: 'Profile updated successfully!'});
-      setProfile({ ...form });
+      setProfile(prev => ({ ...form, photoUrl: prev.photoUrl }));
       setShowForm(false);
       refetch();
     } catch (err) {
@@ -92,6 +110,7 @@ export default function ProfilePage() {
             form={form}
             onChange={handleChange}
             onSubmit={handleSubmit}
+            onFileSelect={handleFileSelect}
           />
         )}
         {statusMsg && (
@@ -104,6 +123,15 @@ export default function ProfilePage() {
           <p><strong>First Name:</strong> {profile.firstName}</p>
           <p><strong>Last Name:</strong> {profile.lastName}</p>
           <p><strong>Body Weight:</strong> {profile.weight} lbs</p>
+          {profile.photoUrl && (
+            <img
+              src={profile.photoUrl}
+              alt="Profile"
+              className={styles.profileImage}
+              width={128}
+              height={128}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -83,3 +83,8 @@
   padding: 2rem;
   font-size: 1.2rem;
 }
+.profileImage {
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}

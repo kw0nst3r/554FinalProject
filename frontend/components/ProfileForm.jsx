@@ -1,6 +1,6 @@
 import styles from '../styles/Profile.module.css';
 
-export default function ProfileForm({ form, onChange, onSubmit }) {
+export default function ProfileForm({form, onChange, onSubmit, onFileSelect}) {
   return (
     <form onSubmit={onSubmit} className={styles.form}>
         <label>
@@ -14,6 +14,15 @@ export default function ProfileForm({ form, onChange, onSubmit }) {
         <label>
             Weight (lbs):
             <input type="number" name="weight" value={form.weight} onChange={onChange} required />
+        </label>
+        <label>
+            Profile Photo:
+            <input
+                type="file"
+                name="profilePhoto"
+                accept="image/*"
+                onChange={onFileSelect}
+            />
         </label>
         <div className={styles.actionRow}>
             <button type="submit">Update Profile</button>
