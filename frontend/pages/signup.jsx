@@ -22,10 +22,26 @@ export default function SignupPage() {
     // Handles the sign-up form submission
     const handleSignup = async () => {
         const newErrors = {};
-        if (!email.trim()) newErrors.email = "Please enter your email.";
-        if (!firstName.trim()) newErrors.firstName = "Please enter your first name.";
-        if (!lastName.trim()) newErrors.lastName = "Please enter your last name.";
-        if (!weight || isNaN(parseFloat(weight))) newErrors.weight = "Please enter a valid body weight.";
+        if (!email.trim()) {
+          newErrors.email = "Please enter your email.";
+        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+          newErrors.email = "Please enter a valid email address.";
+        }
+        if (!firstName.trim()) {
+          newErrors.firstName = "Please enter your first name.";
+        } else if (!/^[a-zA-Z]+$/.test(firstName)) {
+          newErrors.firstName = "First name must contain only letters.";
+        }
+        if (!lastName.trim()) {
+          newErrors.lastName = "Please enter your last name.";
+        } else if (!/^[a-zA-Z]+$/.test(lastName)) {
+          newErrors.lastName = "Last name must contain only letters.";
+        }
+        if (!weight || isNaN(parseFloat(weight))) {
+          newErrors.weight = "Please enter a valid body weight.";
+        } else if (parseFloat(weight) <= 0 || parseFloat(weight) > 1000) {
+          newErrors.weight = "Weight must be between 1 and 1000 lbs.";
+        }
         if (!password) newErrors.password = "Please enter a password.";
         if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
         setErrors(newErrors);
