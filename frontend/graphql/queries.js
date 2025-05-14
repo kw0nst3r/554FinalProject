@@ -78,3 +78,20 @@ export const GET_WORKOUT_ROUTINES = gql`
     }
   }
 `;
+
+export const GET_WORKOUT_ROUTINE_BY_ID = gql`
+  query GetWorkoutRoutineById($id: String!) {
+    getWorkoutRoutineById(id: $id) {
+      _id
+      routineName
+      days {
+        name
+        exercises {
+          name
+          sets
+          muscles
+        }
+      }
+    }
+  }
+`;

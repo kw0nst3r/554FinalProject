@@ -6,8 +6,10 @@ import { getAuth } from 'firebase/auth';
 import { ADD_WORKOUT_ROUTINE } from '../graphql/mutations';
 import { GET_USER_BY_FIREBASE_UID } from '../graphql/queries';
 import client from '../apollo/client';
+import { UPDATE_WORKOUT_ROUTINE } from '../graphql/mutations'; //saving workout details (weight, rir.. etc)
 
-const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
+
+const CreateWorkoutBuilder = ({ adjustedSets, frequency, routineId  }) => {
   const [routineName, setRoutineName] = useState('');
   const [days, setDays] = useState([]);
   const [currentDay, setCurrentDay] = useState({ exercises: [], name: '' });
@@ -17,6 +19,7 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
   const [dayToRepeat, setDayToRepeat] = useState('');
   const [editingDayIndex, setEditingDayIndex] = useState(null);
   const [addRoutine] = useMutation(ADD_WORKOUT_ROUTINE);
+  const [updateRoutine] = useMutation(UPDATE_WORKOUT_ROUTINE); //tom -- UPDATE_WORKOUT_ROUTINE
   const router = useRouter();
 
   const addExerciseToDay = () => {
@@ -69,34 +72,48 @@ const CreateWorkoutBuilder = ({ adjustedSets, frequency }) => {
       });
 
       const mongoUserId = data?.getUserByFirebaseUid?._id;
-
       if (!mongoUserId) {
         alert('User not found in database.');
         return;
       }
 
-      await addRoutine({
-        variables: {
-          userId: mongoUserId,
-          routineName: routineName.trim(),
-          days: days.map(d => ({
-            name: d.name,
-            exercises: d.exercises.map(e => ({
-              name: e.name,
-              sets: e.sets,
-              muscles: e.muscles
-            }))
-          }))
-        }
-      });
+      const daysPayload = days.map(d => ({
+        name: d.name,
+        exercises: d.exercises.map(e => ({
+          name: e.name,
+          sets: e.sets,
+          muscles: e.muscles
+        }))
+      }));
 
-      alert('Routine saved!');
+      if (routineId) {
+        // EDIT existing routine
+        await updateRoutine({
+          variables: {
+            id: routineId,
+            days: daysPayload
+          }
+        });
+        alert('Routine updated!');
+      } else {
+        // CREATE new routine
+        await addRoutine({
+          variables: {
+            userId: mongoUserId,
+            routineName: routineName.trim(),
+            days: daysPayload
+          }
+        });
+        alert('Routine saved!');
+      }
+
       router.push('/workouts');
     } catch (err) {
       console.error('Error saving routine:', err);
       alert('Failed to save routine.');
     }
   };
+
 
   const totalSetsByMuscle = () => {
     const totals = {};

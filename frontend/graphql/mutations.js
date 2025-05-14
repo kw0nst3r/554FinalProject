@@ -150,3 +150,24 @@ export const ADD_EXERCISE = gql`
     }
   }
 `;
+
+//tom - updating /workout field inputs -- do not edit
+export const UPDATE_WORKOUT_ROUTINE = gql`
+  mutation UpdateWorkoutRoutine($id: ID!, $days: [WorkoutDayInput!]!) {
+    updateWorkoutRoutine(id: $id, days: $days) {
+      _id
+      days {
+        name
+        exercises {
+          name
+          sets
+          reps
+          weight
+          rir
+          muscles
+        }
+      }
+    }
+  }
+`;
+

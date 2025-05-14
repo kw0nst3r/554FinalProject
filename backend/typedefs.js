@@ -161,11 +161,17 @@ export const typeDefs = gql`
  
      getPersonalRecords(userId: String!): [PersonalRecord!]!
      getWorkoutRoutines(userId: String!): [WorkoutRoutine!]!
+     getWorkoutRoutineById(id: String!): WorkoutRoutine!
    }
 ####################
 # Mutations
 ####################
 type Mutation {
+  updateWorkoutRoutine(
+    id: String!
+    days: [WorkoutDayInput!]!
+  ): WorkoutRoutine!
+
   updateUserProfile(userId: String!, firstName: String!, lastName: String!, weight: Float!): User
 
   addUser(name: String!, bodyWeight: Float!, firebaseUid: String!): User
@@ -303,11 +309,15 @@ input WorkoutDayInput {
   exercises: [RoutineExerciseInput!]!
 }
 
-input RoutineExerciseInput {
+input RoutineExerciseInput { 
   name: String!
   sets: Int!
+  reps: [Int!]!
+  weight: [Int!]!
+  rir: [Int!]!
   muscles: [String!]!
 }
+
 
 type WorkoutRoutine {
   _id: ID!
@@ -325,6 +335,9 @@ type WorkoutDay {
 type RoutineExercise {
   name: String!
   sets: Int!
+  reps: [Int!]!
+  weight: [Int!]!
+  rir: [Int!]!
   muscles: [String!]!
 }
 `;

@@ -102,6 +102,17 @@ export const resolvers = {
       const workoutRoutinesCollection = await workoutRoutinesCollectionFn();
       const routines = await workoutRoutinesCollection.find({ userId }).toArray();
       return routines.map(r => ({ ...r,_id: r._id.toString()}));
+    },
+    getWorkoutRoutineById: async (_, { id }) => {
+      const workoutRoutinesCollection = await workoutRoutinesCollectionFn();
+      const routine = await workoutRoutinesCollection.findOne({ _id: new ObjectId(id) });
+
+      if (!routine) {
+        throw new GraphQLError("Routine not found", { extensions: { code: "NOT_FOUND" } });
+      }
+
+      routine._id = routine._id.toString();
+      return routine;
     }
   },
 
@@ -170,6 +181,28 @@ export const resolvers = {
         }
     },
     Mutation: {
+        updateWorkoutRoutine: async (_, { id, days }) => {
+            //Get the MongoDB workout routines collection
+            const workoutRoutinesCollection = await workoutRoutinesCollectionFn();
+
+            const result = await workoutRoutinesCollection.findOneAndUpdate(
+              { _id: new ObjectId(id) },
+              { $set: { days } },
+              { returnDocument: "after" }
+            );
+
+            if (!result.value) {
+              throw new GraphQLError("Routine not found", {
+                extensions: { code: "NOT_FOUND" },
+              });
+            }
+
+            return {
+              ...result.value,
+              _id: result.value._id.toString(),
+            };
+          },
+
         updateUserProfile: async (_, { userId, firstName, lastName, weight }) => {
             //Get the MongoDB users collection
             const usersCollection = await usersCollectionFn();

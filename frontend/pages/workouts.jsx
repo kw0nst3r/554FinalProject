@@ -5,6 +5,7 @@ import client from '../apollo/client';
 import Header from '../components/Header.jsx';
 import { GET_WORKOUTS, GET_USER_BY_FIREBASE_UID, GET_WORKOUT_ROUTINES } from "../graphql/queries.js";
 import { Box, Typography, Paper, Button, List, ListItem } from '@mui/material';
+import Link from 'next/link';
 
 export default function WorkoutsPage() {
   const router = useRouter();
@@ -189,9 +190,19 @@ export default function WorkoutsPage() {
                         display: 'block'
                       }}
                     >
-                      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#00bcd4' }}>
-                        {routine.routineName}
-                      </Typography>
+                      <Link href={`/${routine._id}`} passHref>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 'bold',
+                            color: '#00bcd4',
+                            cursor: 'pointer',
+                            '&:hover': { textDecoration: 'underline' }
+                          }}
+                        >
+                          {routine.routineName}
+                        </Typography>
+                      </Link>
                       {routine.days.map((day, i) => (
                         <Box key={i} sx={{ mt: 1 }}>
                           <Typography sx={{ fontWeight: 'bold' }}>{day.name}</Typography>
