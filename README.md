@@ -28,3 +28,13 @@ Next.js, Firebase, Redis, Vercel, ImageMagick
 **How to run:**
 cd/backend -> node app.js & cd/frontend -> npm run dev
 
+**How to deploy to Vercel**
+1. Log into Vercel account
+2. Click create new deployment
+3. Connect your github repo
+4. Manually change the root directory to ./frontend
+5. Manually specify Next.js deployment
+6. Manually add npm run build and npm install to build and run commands section
+7. Manually add environment variable NEXT_PUBLIC_CALORIE_NINJAS_API_KEY with value of your api key from calorie ninjas api. 
+8. Run Deployment
+
