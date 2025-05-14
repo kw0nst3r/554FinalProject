@@ -4,7 +4,7 @@ import { auth } from '../firebase/FirebaseConfig';
 import client from '../apollo/client';
 import { GET_USER_BY_FIREBASE_UID, GET_BODY_WEIGHT_ENTRIES} from '../graphql/queries';
 import { ADD_BODY_WEIGHT_ENTRY, EDIT_BODY_WEIGHT_ENTRY, REMOVE_BODY_WEIGHT_ENTRY} from '../graphql/mutations';
-import WeightGraph from './WeightGraph.jsx';
+import WeightGraph from '../components/WeightGraph.jsx';
 import { Box, Typography, Paper, TextField, Button, List, ListItem, Input } from '@mui/material';
 import Header from '../components/Header.jsx';
 

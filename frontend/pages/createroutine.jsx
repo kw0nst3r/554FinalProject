@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import exercisePool from './/exercisePool';
+import exercisePool from '../utils/exercisePool.js';
 import CreateWorkoutBuilder from './CreateWorkoutBuilder';
 import Header from '../components/Header.jsx';
 

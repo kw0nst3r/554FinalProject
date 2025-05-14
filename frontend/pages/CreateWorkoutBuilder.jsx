@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import exercisePool from './exercisePool';
+import exercisePool from '../utils/exercisePool.js';
 import { useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { getAuth } from 'firebase/auth';
